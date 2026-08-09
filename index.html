@@ -499,6 +499,135 @@ body.driving #map{
   .tool{font-size:10px !important;min-height:52px !important;}
 }
 
+
+/* ===== MV NAVIGATOR v13 STRONG FIX ===== */
+:root{
+  --mv-navy:#0e2239;
+  --mv-blue:#1677ff;
+  --mv-teal:#11b9b0;
+  --mv-green:#35c56a;
+  --mv-bg:#eef7f5;
+  --mv-card:#ffffff;
+  --mv-text:#102033;
+}
+.giroIntro,.connectionBadge{display:none !important;}
+body{background:var(--mv-bg);color:var(--mv-text);}
+#map{background:#dfeee9;}
+
+.searchbox{
+  border:2px solid rgba(17,185,176,.25);
+  box-shadow:0 8px 28px rgba(14,34,57,.18) !important;
+}
+#searchBtn{background:linear-gradient(135deg,var(--mv-teal),var(--mv-blue)) !important;color:#fff !important;}
+
+.result{
+  padding:10px 12px !important;
+  border-radius:14px !important;
+  margin:7px 0 !important;
+  background:#fff !important;
+  border:1px solid #e6edf3 !important;
+}
+.resultRow{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+}
+.resultTitle{font-weight:800;font-size:14px;line-height:1.2;}
+.resultAddr{font-size:11px;color:#667085;margin-top:3px;line-height:1.25;}
+.resultMeta{font-size:11px;color:#2f6d5b;margin-top:4px;}
+.goBtn{
+  border:0;border-radius:12px;padding:10px 14px;background:var(--mv-blue);color:#fff;
+  font-weight:800;min-width:54px;
+}
+.detailsSheet{
+  position:absolute;z-index:1120;left:12px;right:12px;bottom:14px;
+  max-width:620px;margin:auto;background:#fff;border-radius:20px;
+  box-shadow:0 12px 36px #0003;padding:14px;display:none;
+}
+.detailsSheet.show{display:block;}
+.detailsSheet h3{margin:0 0 4px;font-size:17px;}
+.detailsSheet .addr{font-size:12px;color:#667085;}
+.detailsActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.detailsActions button{padding:11px 8px;border-radius:12px;background:#eef4fb;font-weight:800;}
+.detailsActions .primary{grid-column:1/-1;background:linear-gradient(135deg,var(--mv-teal),var(--mv-blue));color:#fff;font-size:16px;}
+
+.compassBtn{
+  position:absolute;z-index:1080;left:14px;top:238px;width:52px;height:52px;border-radius:50%;
+  background:#fff;box-shadow:0 6px 18px #0002;font-size:23px;display:grid;place-items:center;
+}
+.calibrateHint{
+  position:absolute;z-index:1080;left:74px;top:244px;background:rgba(14,34,57,.94);color:white;
+  padding:8px 10px;border-radius:12px;font-size:11px;display:none;
+}
+.calibrateHint.show{display:block;}
+
+.calGuide{
+  max-height:58vh;overflow:auto;
+}
+.calStep{
+  display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #edf0f4;
+}
+.calNum{
+  width:28px;height:28px;border-radius:50%;background:var(--mv-blue);color:#fff;
+  display:grid;place-items:center;font-weight:900;flex:0 0 auto;
+}
+
+/* MV cursor: simple professional aerodynamic marker */
+.mvCursor{
+  width:42px;height:52px;position:relative;transform-origin:50% 72%;
+  filter:drop-shadow(0 5px 6px rgba(0,0,0,.3));
+}
+.mvCursor .shape{
+  position:absolute;left:4px;top:2px;width:34px;height:44px;
+  background:linear-gradient(180deg,#19c7bf 0%,#1677ff 72%);
+  clip-path:polygon(50% 0,100% 74%,73% 65%,64% 100%,36% 100%,27% 65%,0 74%);
+  border-radius:12px;
+}
+.mvCursor .inner{
+  position:absolute;left:8px;top:8px;width:26px;height:30px;border-radius:14px 14px 10px 10px;
+  background:rgba(14,34,57,.95);color:#fff;display:grid;place-items:center;
+  font:bold 12px Arial,sans-serif;border:2px solid rgba(255,255,255,.85);
+}
+.mvCursor:after{
+  content:"";position:absolute;left:17px;top:43px;width:8px;height:8px;border-radius:50%;
+  background:#4dff9f;box-shadow:0 0 12px #4dff9f;
+}
+
+body.driving .top,
+body.driving .quickbar,
+body.driving .poibar,
+body.driving .brand,
+body.driving .weather,
+body.driving .tools,
+body.driving .profileBtn,
+body.driving .modebar,
+body.driving .route,
+body.driving .routePreviewCard,
+body.driving .detailsSheet,
+body.driving .giroIntro,
+body.driving .connectionBadge{
+  display:none !important;
+}
+body.driving .compassBtn{top:170px;}
+body.driving .calibrateHint{top:176px;}
+body.driving #map{filter:saturate(1.08) contrast(1.03);}
+
+@media(max-width:600px){
+  .giroIntro,.connectionBadge,.profileBtn{display:none !important;}
+  .panel{
+    left:10px !important;right:10px !important;bottom:142px !important;
+    max-height:58vh !important;overflow:auto !important;padding:10px !important;
+  }
+  .detailsSheet{left:10px;right:10px;bottom:12px;}
+  .quickbar{top:76px !important;gap:4px !important;}
+  .poibar{top:129px !important;left:10px !important;right:10px !important;width:auto !important;transform:none !important;}
+  .brand{top:174px !important;left:10px !important;}
+  .weather{top:174px !important;right:10px !important;max-width:160px !important;font-size:10px !important;}
+  .compassBtn{left:10px;top:232px;}
+  .calibrateHint{left:68px;top:238px;max-width:210px;}
+}
+
 </style>
 </head>
 <body>
@@ -569,6 +698,22 @@ body.driving #map{
   <button class="startTripBtn" id="startTripBtn">▶ Iniciar viaje</button>
 </div>
 
+<button class="compassBtn" id="compassBtn" title="Brújula">🧭</button>
+<div class="calibrateHint" id="calibrateHint">¿El cursor MV apunta mal? <button id="openCalibrate" style="margin-left:5px;font-weight:800">Calibrar GPS</button></div>
+
+<div class="detailsSheet" id="detailsSheet">
+  <h3 id="detailsTitle">Destino</h3>
+  <div class="addr" id="detailsAddr"></div>
+  <div class="routePreviewMeta" id="detailsMeta" style="margin-top:6px"></div>
+  <div class="detailsActions">
+    <button class="primary" id="detailsStart">▶ Iniciar viaje</button>
+    <button id="detailsFav">⭐ Favorito</button>
+    <button id="detailsHome">🏠 Casa</button>
+    <button id="detailsWork">💼 Trabajo</button>
+    <button id="detailsSchool">🏫 Escuela</button>
+  </div>
+</div>
+
 <div class="panel" id="panel"></div>
 
 <div class="tools">
@@ -586,16 +731,12 @@ body.driving #map{
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">function heroIcon(heading=0){
   return L.divIcon({
     className:'',
-    html:`<div class="mvMascot" style="transform:rotate(${heading}deg)">
-      <div class="cape"></div>
-      <div class="antenna"></div>
-      <div class="head"><i class="eye e1"></i><i class="eye e2"></i></div>
-      <div class="arm a1"></div>
-      <div class="arm a2"></div>
-      <div class="body">MV</div>
+    html:`<div class="mvCursor" style="transform:rotate(${heading}deg)">
+      <div class="shape"></div>
+      <div class="inner">MV</div>
     </div>`,
-    iconSize:[54,58],
-    iconAnchor:[27,35]
+    iconSize:[42,52],
+    iconAnchor:[21,36]
   });
 }
 </script>
@@ -609,6 +750,8 @@ L.control.zoom({position:'bottomright'}).addTo(map);
 let user = null, heroMarker = null, baseMarker = null, routeLayer = null, heroTrailLayer = null, destination = null;
 let reportMarkers = [], parkingMarkers = [];
 let navigationStarted = false;
+let selectedSearchPlace=null;
+let compassMode='heading';
 let heroTrailPoints = [];
 let selectedMode = 'car';
 const panel = document.getElementById('panel');
@@ -825,40 +968,68 @@ function routeSafetyMessage(route){
   return null;
 }
 
+function haversineMiles(aLat,aLon,bLat,bLon){
+  const R=3958.8, toRad=x=>x*Math.PI/180;
+  const dLat=toRad(bLat-aLat), dLon=toRad(bLon-aLon);
+  const aa=Math.sin(dLat/2)**2+Math.cos(toRad(aLat))*Math.cos(toRad(bLat))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(aa));
+}
+
 async function searchPlace(){
   const q=document.getElementById('search').value.trim();
   if(!q) return;
-  showMsg('Buscando…');
-  const url='https://nominatim.openstreetmap.org/search?format=json&limit=5&q='+encodeURIComponent(q);
+  showMsg('Buscando cerca de ti…');
+
+  const params=new URLSearchParams({
+    q, format:'jsonv2', addressdetails:'1', limit:'12'
+  });
+
+  if(user){
+    const d=0.7;
+    params.set('viewbox',`${user[1]-d},${user[0]+d},${user[1]+d},${user[0]-d}`);
+    params.set('bounded','0');
+  }
+
+  let res=[];
   try{
-    const res=await fetch(url,{headers:{'Accept-Language':'es'}}).then(r=>r.json());
-    if(!res.length) return showMsg('No encontré ese destino.');
-    showMsg('<b>Resultados</b>'+res.map((r,i)=>`
-      <div class="result">
-        <div class="route-choice" data-i="${i}" style="font-weight:700">${r.display_name}</div>
-        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:7px">
-          <button class="report save-slot" data-i="${i}" data-slot="home">🏠 Casa</button>
-          <button class="report save-slot" data-i="${i}" data-slot="work">💼 Trabajo</button>
-          <button class="report save-slot" data-i="${i}" data-slot="school">🏫 Escuela</button>
-          <button class="report save-fav" data-i="${i}">⭐ Favorito</button>
+    res=await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`,
+      {headers:{'Accept-Language':'es'}}).then(r=>r.json());
+  }catch(e){
+    return showMsg('No se pudo buscar en este momento.');
+  }
+
+  const mapped=res.map(r=>{
+    const lat=+r.lat, lon=+r.lon;
+    const dist=user?haversineMiles(user[0],user[1],lat,lon):99999;
+    const a=r.address||{};
+    const region=a.state||a.region||'';
+    const city=a.city||a.town||a.village||a.municipality||'';
+    return {
+      name:r.name||r.display_name.split(',')[0],
+      display_name:r.display_name,
+      lat,lon,dist,region,city
+    };
+  });
+
+  mapped.sort((a,b)=>a.dist-b.dist);
+  const top=mapped.slice(0,8);
+  if(!top.length) return showMsg('No encontré resultados cercanos.');
+
+  showMsg('<b>Resultados cercanos</b>'+top.map((r,i)=>`
+    <div class="result">
+      <div class="resultRow">
+        <div>
+          <div class="resultTitle">${r.name}</div>
+          <div class="resultAddr">${r.display_name}</div>
+          <div class="resultMeta">${r.dist<9999?r.dist.toFixed(1)+' mi':''}</div>
         </div>
-      </div>`).join(''));
-    [...panel.querySelectorAll('.route-choice')].forEach(el=>el.onclick=()=>routeTo(res[+el.dataset.i]));
-    [...panel.querySelectorAll('.save-slot')].forEach(el=>el.onclick=(ev)=>{
-      ev.stopPropagation();
-      const r=res[+el.dataset.i];
-      const place={name:r.display_name,lat:+r.lat,lon:+r.lon};
-      saveSlot(el.dataset.slot,place);
-      showMsg(`<b>${slotLabel(el.dataset.slot)} guardado</b><br>${place.name}`);
-    });
-    [...panel.querySelectorAll('.save-fav')].forEach(el=>el.onclick=(ev)=>{
-      ev.stopPropagation();
-      const r=res[+el.dataset.i];
-      const place={name:r.display_name,lat:+r.lat,lon:+r.lon};
-      addFavorite(place);
-      showMsg(`<b>Favorito guardado ⭐</b><br>${place.name}`);
-    });
-  }catch(e){ showMsg('No se pudo buscar el destino.'); }
+        <button class="goBtn" data-i="${i}">Ir</button>
+      </div>
+    </div>`).join(''));
+
+  panel.querySelectorAll('.goBtn').forEach(btn=>{
+    btn.onclick=()=>openPlaceDetails(top[+btn.dataset.i]);
+  });
 }
 document.getElementById('searchBtn').onclick=searchPlace;
 document.getElementById('clearSearchBtn').onclick=()=>{
@@ -890,6 +1061,7 @@ function enterDrivingMode(route, place){
 function endDrivingMode(showHomeMessage=true){
   navigationStarted=false;
   document.body.classList.remove('driving');
+  document.getElementById('calibrateHint')?.classList.remove('show');
   heroTrailPoints=[];
   if(heroTrailLayer){map.removeLayer(heroTrailLayer); heroTrailLayer=null;}
   if(heroMarker){map.removeLayer(heroMarker);heroMarker=null;}
@@ -900,8 +1072,46 @@ function endDrivingMode(showHomeMessage=true){
   if(showHomeMessage) setTimeout(()=>showMsg(`<b>MV Navigator</b><br>🏠 Llegamos, amigo. MV Giro vuelve a Base MV.`),120);
 }
 
+
+function openPlaceDetails(place){
+  selectedSearchPlace=place;
+  document.getElementById('detailsTitle').textContent=place.name||'Destino';
+  document.getElementById('detailsAddr').textContent=place.display_name||place.name||'';
+  document.getElementById('detailsMeta').textContent=place.dist!=null&&place.dist<9999?`${place.dist.toFixed(1)} mi desde tu ubicación`:'';
+  document.getElementById('detailsSheet').classList.add('show');
+  hidePanel();
+}
+
+document.getElementById('detailsStart').onclick=()=>{
+  if(!selectedSearchPlace) return;
+  document.getElementById('detailsSheet').classList.remove('show');
+  routeTo(selectedSearchPlace);
+};
+document.getElementById('detailsFav').onclick=()=>{if(selectedSearchPlace)addFavorite(selectedSearchPlace);};
+document.getElementById('detailsHome').onclick=()=>{if(selectedSearchPlace)saveSlot('home',selectedSearchPlace);};
+document.getElementById('detailsWork').onclick=()=>{if(selectedSearchPlace)saveSlot('work',selectedSearchPlace);};
+document.getElementById('detailsSchool').onclick=()=>{if(selectedSearchPlace)saveSlot('school',selectedSearchPlace);};
+
+function showCalibrationGuide(){
+  showMsg(`<div class="calGuide"><b>GUÍA: GPS DESALINEADO</b>
+    <div class="calStep"><div class="calNum">1</div><div><b>Verifica tu señal GPS</b><br><span class="tiny">Busca un lugar abierto y espera unos segundos.</span></div></div>
+    <div class="calStep"><div class="calNum">2</div><div><b>Abre la brújula</b><br><span class="tiny">Usa el botón de brújula en el mapa.</span></div></div>
+    <div class="calStep"><div class="calNum">3</div><div><b>Calibra la brújula</b><br><span class="tiny">Mueve el teléfono lentamente en forma de 8 dos o tres veces.</span></div></div>
+    <div class="calStep"><div class="calNum">4</div><div><b>Espera la alineación</b><br><span class="tiny">Espera unos segundos para que MV se alinee.</span></div></div>
+    <div class="calStep"><div class="calNum">5</div><div><b>Reinicia la navegación</b><br><span class="tiny">Si sigue incorrecto, termina y vuelve a iniciar la ruta.</span></div></div>
+  </div>`);
+}
+document.getElementById('openCalibrate').onclick=showCalibrationGuide;
+
+document.getElementById('compassBtn').onclick=()=>{
+  compassMode=compassMode==='heading'?'north':'heading';
+  document.getElementById('compassBtn').textContent=compassMode==='heading'?'🧭':'⬆️';
+  if(user) map.setView(user,map.getZoom(),{animate:true});
+};
+
 async function routeTo(r){
   hidePanel();
+  document.getElementById('detailsSheet')?.classList.remove('show');
   document.getElementById('routePreviewCard')?.classList.remove('show');
   if(!user) return showMsg('Esperando GPS.');
   const place={name:r.display_name||r.name||'Destino',lat:+r.lat,lon:+r.lon};
@@ -1090,10 +1300,10 @@ function updateConnectionBadge(){
   const badge=document.getElementById('connectionBadge');
   if(!badge) return;
   if(navigator.onLine){
-    badge.textContent='● Con internet';
+    badge.textContent='';
     badge.classList.remove('offline');
   }else{
-    badge.textContent='● Modo sin internet';
+    badge.textContent='';
     badge.classList.add('offline');
   }
 }
@@ -1152,6 +1362,7 @@ document.getElementById('startTripBtn').onclick=()=>{
   if(!pendingRoute || !pendingPlace) return;
   document.getElementById('routePreviewCard').classList.remove('show');
   enterDrivingMode(pendingRoute, pendingPlace);
+  setTimeout(()=>document.getElementById('calibrateHint')?.classList.add('show'),5000);
 
   const firstStep=pendingRoute.legs?.[0]?.steps?.[0];
   if(firstStep){
@@ -1164,6 +1375,7 @@ document.getElementById('driveEnd').onclick=()=>{
   if(routeLayer){map.removeLayer(routeLayer);routeLayer=null;}
   document.getElementById('routeCard').classList.remove('show');
   document.getElementById('routePreviewCard')?.classList.remove('show');
+  document.getElementById('detailsSheet')?.classList.remove('show');
   endDrivingMode(true);
 };
 
@@ -1222,6 +1434,7 @@ document.getElementById('closeBtn').onclick=()=>{
   reportMarkers.forEach(m=>map.removeLayer(m)); reportMarkers=[];
   parkingMarkers.forEach(m=>map.removeLayer(m)); parkingMarkers=[];
   document.getElementById('routeCard').classList.remove('show');
+  document.getElementById('detailsSheet')?.classList.remove('show');
   endDrivingMode(true);
 };
 

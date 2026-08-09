@@ -37,3 +37,13 @@ MV NAVIGATOR V12 — VERSIÓN CORREGIDA
 - El muñeco tiene antenita, capa y “MV” en el pecho.
 - El muñeco deja una línea/estela de seguimiento durante la ruta.
 - Al comenzar el viaje se ocultan controles secundarios y queda el mapa limpio.
+
+
+MV NAVIGATOR V13 — CORRECCIÓN FUERTE
+- Búsqueda ordenada por cercanía a la ubicación GPS.
+- Resultados compactos: nombre, dirección, distancia y botón Ir.
+- Guardar como Casa/Trabajo/Escuela/Favorito movido a ficha de detalles.
+- Cursor MV aerodinámico profesional en lugar de carro/flecha/muñeco anterior.
+- Botón de brújula y guía de calibración GPS.
+- Modo conducción limpio.
+- Eliminados avisos grandes de conexión en el mapa.
