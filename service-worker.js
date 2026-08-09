@@ -1,29 +1,44 @@
 
-const CACHE='giro-shell-v9';
-const SHELL=['./','./index.html','./manifest.json'];
+const CACHE='mv-navigator-v16';
+const SHELL=['./manifest.json'];
 
-self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)));
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE).then(cache => cache.addAll(SHELL))
+  );
   self.skipWaiting();
 });
 
-self.addEventListener('activate',event=>{
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch',event=>{
-  const req=event.request;
-  if(req.method!=='GET') return;
+self.addEventListener('fetch', event => {
+  const req = event.request;
+  if(req.method !== 'GET') return;
+
+  // Always prefer the newest HTML/navigation response.
+  if(req.mode === 'navigate' || req.destination === 'document'){
+    event.respondWith(
+      fetch(req, {cache:'no-store'})
+        .then(resp => resp)
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
+  // Network-first for app assets; cached fallback only if offline.
   event.respondWith(
-    caches.match(req).then(cached=>{
-      if(cached) return cached;
-      return fetch(req).catch(()=>{
-        if(req.mode==='navigate') return caches.match('./index.html');
-        return Response.error();
-      });
-    })
+    fetch(req)
+      .then(resp => {
+        const copy = resp.clone();
+        caches.open(CACHE).then(cache => cache.put(req, copy)).catch(()=>{});
+        return resp;
+      })
+      .catch(() => caches.match(req))
   );
 });

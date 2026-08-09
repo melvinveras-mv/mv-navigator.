@@ -65,3 +65,13 @@ MV NAVIGATOR V15 — AUTOCOMPLETADO
 - Máximo 6 sugerencias compactas con nombre, dirección y distancia.
 - Al tocar una sugerencia se abre directamente la ficha del lugar.
 - Eliminados nuevamente banners grandes residuales del mapa.
+
+
+MV NAVIGATOR V16 — CLEAN MOBILE + CACHE FIX
+- Se corrigió el problema que hacía que el teléfono siguiera mostrando la v9.
+- Service worker actualizado a mv-navigator-v16.
+- HTML usa estrategia network-first para cargar siempre la versión nueva.
+- Se eliminan automáticamente caches anteriores al activar la nueva versión.
+- Pantalla inicial móvil reducida a buscador, 4 accesos, mapa y barra inferior esencial.
+- Se ocultan banners, clima flotante grande, categorías y botones secundarios del inicio.
+- Cursor MV aprobado conservado.

@@ -910,6 +910,233 @@ body.driving #map{filter:saturate(1.08) contrast(1.03);}
   .autoItem{padding:10px 11px;}
 }
 
+
+/* ===== MV NAVIGATOR v16 — CLEAN MOBILE + CACHE FIX ===== */
+:root{
+  --mv-bg:#061522;
+  --mv-panel:#0a2033;
+  --mv-panel2:#0e2a42;
+  --mv-border:#24455f;
+  --mv-blue:#1779ff;
+  --mv-cyan:#20cbd0;
+  --mv-green:#53df82;
+  --mv-text:#ffffff;
+  --mv-muted:#aabac7;
+}
+.giroIntro,.connectionBadge,.brand,.weather,.profileBtn,.searchhint{display:none !important;}
+
+@media(max-width:600px){
+  html,body{background:var(--mv-bg) !important;}
+  #map{filter:saturate(.9) brightness(.75) contrast(1.1) !important;}
+
+  .top{
+    top:10px !important;
+    left:10px !important;
+    right:10px !important;
+    z-index:1300 !important;
+  }
+  .searchbox{
+    height:54px !important;
+    border-radius:18px !important;
+    background:rgba(7,25,41,.97) !important;
+    border:1px solid var(--mv-border) !important;
+    box-shadow:0 8px 26px #0005 !important;
+  }
+  .searchbox input{
+    background:transparent !important;
+    color:#fff !important;
+    font-size:16px !important;
+  }
+  .searchbox input::placeholder{color:#b6c4cf !important;}
+  #clearSearchBtn{background:transparent !important;color:#c9d5df !important;}
+  #searchBtn{background:var(--mv-blue) !important;color:#fff !important;}
+
+  .autocompleteBox{
+    top:60px !important;
+    max-height:52vh !important;
+    background:rgba(7,25,41,.99) !important;
+    border:1px solid var(--mv-border) !important;
+  }
+
+  .quickbar{
+    top:72px !important;
+    left:10px !important;
+    right:10px !important;
+    grid-template-columns:repeat(4,1fr) !important;
+    gap:6px !important;
+  }
+  .quickbar .quick:nth-child(n+5){display:none !important;}
+  .quick{
+    min-height:52px !important;
+    padding:6px 2px !important;
+    border-radius:14px !important;
+    background:rgba(10,32,51,.96) !important;
+    border:1px solid var(--mv-border) !important;
+    color:#fff !important;
+    box-shadow:none !important;
+    font-size:10px !important;
+  }
+  .quick span{font-size:18px !important;}
+
+  /* Hide categories from the main driving-ready screen; they can be reached via search/results. */
+  .poibar{display:none !important;}
+
+  /* Compact bottom navigation, only four essential buttons */
+  .tools{
+    left:10px !important;
+    right:10px !important;
+    bottom:10px !important;
+    grid-template-columns:repeat(4,1fr) !important;
+    gap:6px !important;
+    background:rgba(7,25,41,.92) !important;
+    border:1px solid var(--mv-border) !important;
+    border-radius:18px !important;
+    padding:7px !important;
+  }
+  .tools .tool{display:none !important;}
+  #locateBtn,#tripPrefsBtn,#safetyBtn,#weatherBtn{
+    display:block !important;
+  }
+  .tool{
+    min-height:58px !important;
+    background:transparent !important;
+    color:#fff !important;
+    border:0 !important;
+    box-shadow:none !important;
+    border-radius:12px !important;
+    font-size:10px !important;
+  }
+  .tool span{font-size:20px !important;}
+
+  .panel{
+    top:134px !important;
+    left:10px !important;
+    right:10px !important;
+    bottom:auto !important;
+    max-height:58vh !important;
+    overflow:auto !important;
+    background:rgba(7,25,41,.99) !important;
+    color:#fff !important;
+    border:1px solid var(--mv-border) !important;
+    border-radius:18px !important;
+    box-shadow:0 12px 28px #0005 !important;
+    padding:10px !important;
+  }
+  .panel .result{
+    background:#0c2941 !important;
+    border:1px solid #21445f !important;
+    color:#fff !important;
+  }
+  .resultAddr{color:#b4c3cf !important;}
+  .resultMeta{color:var(--mv-green) !important;}
+
+  .detailsSheet{
+    left:10px !important;
+    right:10px !important;
+    bottom:10px !important;
+    background:#0a2033 !important;
+    color:#fff !important;
+    border:1px solid var(--mv-border) !important;
+  }
+  .detailsSheet .addr{color:#b4c3cf !important;}
+  .detailsActions button{background:#12324f !important;color:#fff !important;}
+  .detailsActions .primary{background:var(--mv-blue) !important;}
+
+  .routePreviewCard{
+    left:10px !important;
+    right:10px !important;
+    bottom:88px !important;
+    background:#0a2033 !important;
+    color:#fff !important;
+    border:1px solid var(--mv-border) !important;
+  }
+
+  .compassBtn{
+    left:12px !important;
+    top:auto !important;
+    bottom:94px !important;
+    width:48px !important;
+    height:48px !important;
+    background:rgba(10,32,51,.97) !important;
+    color:#fff !important;
+    border:1px solid var(--mv-border) !important;
+  }
+  .calibrateHint{
+    left:67px !important;
+    top:auto !important;
+    bottom:100px !important;
+    max-width:220px !important;
+  }
+
+  body.driving .top,
+  body.driving .quickbar,
+  body.driving .poibar,
+  body.driving .tools,
+  body.driving .brand,
+  body.driving .weather,
+  body.driving .profileBtn,
+  body.driving .detailsSheet,
+  body.driving .routePreviewCard{
+    display:none !important;
+  }
+  body.driving #turnHud{
+    display:block !important;
+    top:12px !important;
+    left:12px !important;
+    right:12px !important;
+    max-width:none !important;
+    background:#0a2033 !important;
+    border:1px solid var(--mv-border) !important;
+  }
+  body.driving #tripHud{
+    display:block !important;
+    left:12px !important;
+    right:12px !important;
+    bottom:12px !important;
+    background:#0a2033 !important;
+    border:1px solid var(--mv-border) !important;
+  }
+  body.driving #driveTools{
+    display:flex !important;
+    right:10px !important;
+    top:116px !important;
+    gap:7px !important;
+  }
+  body.driving .driveTool{
+    width:54px !important;
+    min-height:54px !important;
+    background:#0a2033 !important;
+    color:#fff !important;
+    border:1px solid var(--mv-border) !important;
+  }
+  body.driving .driveTool.danger{background:var(--mv-blue) !important;}
+  body.driving .compassBtn{
+    left:10px !important;
+    top:116px !important;
+    bottom:auto !important;
+  }
+}
+
+/* Approved MV cursor */
+.mvCursor{
+  width:44px;height:52px;position:relative;transform-origin:50% 68%;
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));
+}
+.mvCursor .shape{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,#20d7cf 0%,#1677ff 74%);
+  clip-path:polygon(50% 0,94% 78%,68% 66%,61% 100%,39% 100%,32% 66%,6% 78%);
+}
+.mvCursor .inner{
+  position:absolute;left:8px;top:13px;width:28px;height:24px;
+  background:#0a2340;border:2px solid #e2fbff;border-radius:10px;
+  display:grid;place-items:center;color:#fff;font:bold 12px Arial;
+}
+.mvCursor .tail{
+  position:absolute;left:18px;bottom:-4px;width:8px;height:12px;
+  background:#4ef09f;border-radius:5px;box-shadow:0 0 12px #4ef09f;
+}
+
 </style>
 </head>
 <body>
@@ -1805,7 +2032,7 @@ document.getElementById('closeBtn').onclick=()=>{
 };
 
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=16').catch(()=>{}));
 }
 </script>
 </body>
