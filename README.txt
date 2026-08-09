@@ -47,3 +47,21 @@ MV NAVIGATOR V13 — CORRECCIÓN FUERTE
 - Botón de brújula y guía de calibración GPS.
 - Modo conducción limpio.
 - Eliminados avisos grandes de conexión en el mapa.
+
+
+MV NAVIGATOR V14 — MOBILE CLEAN
+- Eliminado cuadro azul central.
+- Eliminado indicador grande “Con internet”.
+- Pantalla móvil reorganizada para dejar el mapa visible.
+- Máximo 4 accesos principales y categorías compactas.
+- Cursor MV exactamente en estilo aprobado: azul/turquesa, MV visible, orientación clara.
+- Modo navegación oscuro, limpio y con controles mínimos.
+
+
+MV NAVIGATOR V15 — AUTOCOMPLETADO
+- Al escribir 2 o más caracteres aparecen sugerencias debajo del buscador.
+- Resultados priorizados por cercanía a la ubicación GPS.
+- En esta prueba la búsqueda se limita a Estados Unidos para evitar resultados de otros países.
+- Máximo 6 sugerencias compactas con nombre, dirección y distancia.
+- Al tocar una sugerencia se abre directamente la ficha del lugar.
+- Eliminados nuevamente banners grandes residuales del mapa.

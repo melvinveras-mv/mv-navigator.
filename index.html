@@ -628,6 +628,288 @@ body.driving #map{filter:saturate(1.08) contrast(1.03);}
   .calibrateHint{left:68px;top:238px;max-width:210px;}
 }
 
+
+/* ===== MV NAVIGATOR v14 MOBILE CLEAN ===== */
+:root{
+  --mv-bg:#071827;
+  --mv-panel:#0b2238;
+  --mv-panel2:#0f2d49;
+  --mv-blue:#1786ff;
+  --mv-cyan:#1eced3;
+  --mv-green:#48d77c;
+  --mv-text:#ffffff;
+  --mv-muted:#9fb2c4;
+}
+.giroIntro,.connectionBadge,.profileBtn{display:none !important;}
+
+@media(max-width:600px){
+  body{background:#071827 !important;}
+  #map{filter:saturate(.92) brightness(.78) contrast(1.08) !important;}
+
+  .top{
+    top:10px !important;
+    left:10px !important;
+    right:10px !important;
+    z-index:1200 !important;
+  }
+  .searchbox{
+    height:52px !important;
+    border-radius:18px !important;
+    background:rgba(9,31,51,.96) !important;
+    border:1px solid #21425d !important;
+    box-shadow:0 7px 20px #0005 !important;
+  }
+  .searchbox input{
+    background:transparent !important;
+    color:#fff !important;
+    font-size:16px !important;
+  }
+  .searchbox input::placeholder{color:#bac7d2 !important;}
+  #clearSearchBtn{
+    background:transparent !important;
+    color:#c8d5df !important;
+  }
+  #searchBtn{
+    background:#176ee8 !important;
+    color:#fff !important;
+  }
+  .searchhint{display:none !important;}
+
+  .quickbar{
+    top:70px !important;
+    left:10px !important;
+    right:10px !important;
+    grid-template-columns:repeat(4,1fr) !important;
+    gap:6px !important;
+  }
+  .quickbar .quick:nth-child(n+5){display:none !important;}
+  .quick{
+    min-height:50px !important;
+    padding:5px 2px !important;
+    background:rgba(11,34,56,.96) !important;
+    color:#fff !important;
+    border:1px solid #294b66 !important;
+    box-shadow:none !important;
+    border-radius:14px !important;
+    font-size:10px !important;
+  }
+  .quick span{font-size:18px !important;}
+
+  .poibar{
+    top:126px !important;
+    left:10px !important;
+    right:10px !important;
+    width:auto !important;
+    transform:none !important;
+    gap:5px !important;
+    overflow-x:auto !important;
+  }
+  .poi{
+    background:rgba(11,34,56,.96) !important;
+    color:#fff !important;
+    border:1px solid #294b66 !important;
+    box-shadow:none !important;
+    font-size:10px !important;
+    padding:7px 9px !important;
+  }
+
+  .brand,.weather{display:none !important;}
+
+  .compassBtn{
+    left:12px !important;
+    top:auto !important;
+    bottom:190px !important;
+    width:46px !important;
+    height:46px !important;
+    background:rgba(11,34,56,.96) !important;
+    color:#fff !important;
+    border:1px solid #294b66 !important;
+  }
+  .calibrateHint{
+    left:65px !important;
+    top:auto !important;
+    bottom:194px !important;
+    max-width:215px !important;
+  }
+
+  .tools{
+    left:10px !important;
+    right:10px !important;
+    bottom:10px !important;
+    grid-template-columns:repeat(4,1fr) !important;
+    gap:6px !important;
+  }
+  .tools .tool:nth-child(n+5){display:none !important;}
+  .tool{
+    min-height:58px !important;
+    background:rgba(11,34,56,.97) !important;
+    color:#fff !important;
+    border:1px solid #294b66 !important;
+    box-shadow:none !important;
+    border-radius:15px !important;
+    font-size:10px !important;
+  }
+  .tool span{font-size:19px !important;}
+
+  .panel{
+    left:10px !important;
+    right:10px !important;
+    top:130px !important;
+    bottom:auto !important;
+    max-height:58vh !important;
+    overflow:auto !important;
+    background:rgba(8,27,45,.98) !important;
+    color:#fff !important;
+    border-radius:18px !important;
+    border:1px solid #294b66 !important;
+    box-shadow:0 12px 30px #0005 !important;
+  }
+  .panel .result{
+    background:#0d2a44 !important;
+    border:1px solid #214765 !important;
+    color:#fff !important;
+  }
+  .resultAddr{color:#b4c4d0 !important;}
+  .resultMeta{color:#65df92 !important;}
+
+  .detailsSheet{
+    left:10px !important;
+    right:10px !important;
+    bottom:12px !important;
+    background:#0b2238 !important;
+    color:#fff !important;
+    border:1px solid #294b66 !important;
+  }
+  .detailsSheet .addr{color:#b4c4d0 !important;}
+  .detailsActions button{background:#15334f !important;color:#fff !important;}
+  .detailsActions .primary{background:#176ee8 !important;}
+
+  .routePreviewCard{
+    left:10px !important;
+    right:10px !important;
+    bottom:88px !important;
+    background:#0b2238 !important;
+    color:#fff !important;
+    border:1px solid #294b66 !important;
+  }
+
+  body.driving .top,
+  body.driving .quickbar,
+  body.driving .poibar,
+  body.driving .tools,
+  body.driving .brand,
+  body.driving .weather,
+  body.driving .profileBtn,
+  body.driving .modebar,
+  body.driving .detailsSheet,
+  body.driving .routePreviewCard{
+    display:none !important;
+  }
+
+  body.driving #turnHud{
+    display:block !important;
+    top:12px !important;
+    left:12px !important;
+    right:12px !important;
+    max-width:none !important;
+    background:#0b2238 !important;
+    border:1px solid #294b66 !important;
+  }
+  body.driving #tripHud{
+    display:block !important;
+    bottom:12px !important;
+    left:12px !important;
+    right:12px !important;
+    background:#0b2238 !important;
+    border:1px solid #294b66 !important;
+  }
+  body.driving #driveTools{
+    display:flex !important;
+    right:10px !important;
+    top:115px !important;
+    gap:7px !important;
+  }
+  body.driving .driveTool{
+    width:54px !important;
+    min-height:54px !important;
+    background:#0b2238 !important;
+    color:#fff !important;
+    border:1px solid #294b66 !important;
+  }
+  body.driving .driveTool.danger{
+    background:#176ee8 !important;
+  }
+  body.driving .compassBtn{
+    left:10px !important;
+    bottom:auto !important;
+    top:115px !important;
+  }
+}
+
+/* Approved MV route cursor */
+.mvCursor{
+  width:44px;height:52px;position:relative;transform-origin:50% 68%;
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));
+}
+.mvCursor .shape{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,#1bd6cf 0%,#176ee8 74%);
+  clip-path:polygon(50% 0,94% 78%,68% 66%,61% 100%,39% 100%,32% 66%,6% 78%);
+}
+.mvCursor .inner{
+  position:absolute;left:8px;top:13px;width:28px;height:24px;
+  background:#0a2340;border:2px solid #dff9ff;border-radius:10px;
+  display:grid;place-items:center;color:#fff;font:bold 12px Arial;
+}
+.mvCursor .tail{
+  position:absolute;left:18px;bottom:-4px;width:8px;height:12px;
+  background:#4ef09f;border-radius:5px;
+  box-shadow:0 0 12px #4ef09f;
+}
+
+
+/* ===== MV NAVIGATOR v15 AUTOCOMPLETE ===== */
+.autocompleteBox{
+  position:absolute;
+  z-index:1250;
+  top:66px;
+  left:0;
+  right:0;
+  background:rgba(8,27,45,.985);
+  border:1px solid #294b66;
+  border-radius:16px;
+  box-shadow:0 12px 28px rgba(0,0,0,.38);
+  overflow:hidden;
+  display:none;
+  max-height:46vh;
+  overflow-y:auto;
+}
+.autocompleteBox.show{display:block;}
+.autoItem{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:11px 12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  color:#fff;
+  cursor:pointer;
+}
+.autoItem:last-child{border-bottom:0;}
+.autoItem:hover{background:#10314e;}
+.autoName{font-weight:800;font-size:14px;line-height:1.2;}
+.autoAddr{font-size:11px;color:#b8c8d5;margin-top:3px;line-height:1.25;}
+.autoDist{font-size:11px;color:#63df94;white-space:nowrap;}
+.autoEmpty{padding:12px;color:#b8c8d5;font-size:12px;}
+@media(max-width:600px){
+  .autocompleteBox{
+    top:58px;
+    border-radius:14px;
+    max-height:50vh;
+  }
+  .autoItem{padding:10px 11px;}
+}
+
 </style>
 </head>
 <body>
@@ -639,6 +921,7 @@ body.driving #map{filter:saturate(1.08) contrast(1.03);}
     <input id="search" placeholder="Escribe una dirección, negocio o lugar" autocomplete="off" aria-label="Buscar dirección">
     <button id="clearSearchBtn" title="Borrar búsqueda">✕</button><button id="searchBtn" title="Buscar">⌕</button>
   </div>
+  <div class="autocompleteBox" id="autocompleteBox"></div>
   <div class="searchhint">Ejemplo: 123 Main St, Boston, MA</div>
 </div>
 
@@ -734,9 +1017,10 @@ body.driving #map{filter:saturate(1.08) contrast(1.03);}
     html:`<div class="mvCursor" style="transform:rotate(${heading}deg)">
       <div class="shape"></div>
       <div class="inner">MV</div>
+      <div class="tail"></div>
     </div>`,
-    iconSize:[42,52],
-    iconAnchor:[21,36]
+    iconSize:[44,52],
+    iconAnchor:[22,35]
   });
 }
 </script>
@@ -751,6 +1035,8 @@ let user = null, heroMarker = null, baseMarker = null, routeLayer = null, heroTr
 let reportMarkers = [], parkingMarkers = [];
 let navigationStarted = false;
 let selectedSearchPlace=null;
+let autocompleteTimer=null;
+let autocompleteResults=[];
 let compassMode='heading';
 let heroTrailPoints = [];
 let selectedMode = 'car';
@@ -975,7 +1261,95 @@ function haversineMiles(aLat,aLon,bLat,bLon){
   return 2*R*Math.asin(Math.sqrt(aa));
 }
 
+
+function hideAutocomplete(){
+  const box=document.getElementById('autocompleteBox');
+  if(box){ box.classList.remove('show'); box.innerHTML=''; }
+}
+
+function renderAutocomplete(items){
+  const box=document.getElementById('autocompleteBox');
+  if(!box) return;
+  autocompleteResults=items;
+  if(!items.length){
+    box.innerHTML='<div class="autoEmpty">No encontré coincidencias cercanas.</div>';
+    box.classList.add('show');
+    return;
+  }
+  box.innerHTML=items.map((r,i)=>`
+    <div class="autoItem" data-i="${i}">
+      <div>
+        <div class="autoName">${r.name}</div>
+        <div class="autoAddr">${r.display_name}</div>
+      </div>
+      <div class="autoDist">${r.dist<9999?r.dist.toFixed(1)+' mi':''}</div>
+    </div>`).join('');
+  box.classList.add('show');
+  box.querySelectorAll('.autoItem').forEach(el=>{
+    el.onclick=()=>{
+      const r=autocompleteResults[+el.dataset.i];
+      document.getElementById('search').value=r.name;
+      hideAutocomplete();
+      openPlaceDetails(r);
+    };
+  });
+}
+
+async function runAutocomplete(q){
+  q=q.trim();
+  if(q.length<2){ hideAutocomplete(); return; }
+
+  const params=new URLSearchParams({
+    q,
+    format:'jsonv2',
+    addressdetails:'1',
+    limit:'8',
+    countrycodes:'us'
+  });
+
+  if(user){
+    const d=0.55;
+    params.set('viewbox',`${user[1]-d},${user[0]+d},${user[1]+d},${user[0]-d}`);
+    params.set('bounded','0');
+  }
+
+  try{
+    const res=await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`,
+      {headers:{'Accept-Language':'es'}}).then(r=>r.json());
+
+    const items=res.map(r=>{
+      const lat=+r.lat, lon=+r.lon;
+      const dist=user?haversineMiles(user[0],user[1],lat,lon):99999;
+      return {
+        name:r.name||r.display_name.split(',')[0],
+        display_name:r.display_name,
+        lat,lon,dist
+      };
+    }).sort((a,b)=>a.dist-b.dist).slice(0,6);
+
+    renderAutocomplete(items);
+  }catch(e){
+    hideAutocomplete();
+  }
+}
+
+const searchInput=document.getElementById('search');
+searchInput.addEventListener('input',()=>{
+  clearTimeout(autocompleteTimer);
+  const q=searchInput.value;
+  autocompleteTimer=setTimeout(()=>runAutocomplete(q),650);
+});
+searchInput.addEventListener('focus',()=>{
+  if(searchInput.value.trim().length>=2) runAutocomplete(searchInput.value);
+});
+document.addEventListener('click',(e)=>{
+  const top=document.querySelector('.top');
+  if(top && !top.contains(e.target)) hideAutocomplete();
+});
+
+
 async function searchPlace(){
+  hideAutocomplete();
   const q=document.getElementById('search').value.trim();
   if(!q) return;
   showMsg('Buscando cerca de ti…');
@@ -1034,6 +1408,7 @@ async function searchPlace(){
 document.getElementById('searchBtn').onclick=searchPlace;
 document.getElementById('clearSearchBtn').onclick=()=>{
   document.getElementById('search').value='';
+  hideAutocomplete();
   hidePanel();
   document.getElementById('search').focus();
 };
@@ -1069,11 +1444,12 @@ function endDrivingMode(showHomeMessage=true){
     if(baseMarker) map.removeLayer(baseMarker);
     baseMarker=L.marker(user,{icon:baseIcon(),zIndexOffset:900}).addTo(map);
   }
-  if(showHomeMessage) setTimeout(()=>showMsg(`<b>MV Navigator</b><br>🏠 Llegamos, amigo. MV Giro vuelve a Base MV.`),120);
+  if(showHomeMessage) /* disabled intro */ setTimeout(()=>console.log(`<b>MV Navigator</b><br>🏠 Llegamos, amigo. MV Giro vuelve a Base MV.`),120);
 }
 
 
 function openPlaceDetails(place){
+  hideAutocomplete();
   selectedSearchPlace=place;
   document.getElementById('detailsTitle').textContent=place.name||'Destino';
   document.getElementById('detailsAddr').textContent=place.display_name||place.name||'';
@@ -1296,20 +1672,10 @@ function openTripPrefs(){
 }
 document.getElementById('tripPrefsBtn').onclick=openTripPrefs;
 
-function updateConnectionBadge(){
-  const badge=document.getElementById('connectionBadge');
-  if(!badge) return;
-  if(navigator.onLine){
-    badge.textContent='';
-    badge.classList.remove('offline');
-  }else{
-    badge.textContent='';
-    badge.classList.add('offline');
-  }
-}
-window.addEventListener('online',updateConnectionBadge);
-window.addEventListener('offline',updateConnectionBadge);
-updateConnectionBadge();
+function updateConnectionBadge(){}
+
+
+
 
 document.getElementById('offlineBtn').onclick=()=>{
   showMsg(`<b>📥 Preparar MV Navigator sin internet</b><br>
