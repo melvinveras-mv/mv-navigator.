@@ -230,6 +230,59 @@
       .giroIntro span{font-size:11px}
     }
     
+
+    /* ===== Mobile cleanup v10 ===== */
+    .startTripBtn{
+      width:100%; margin-top:10px; padding:15px 18px; border-radius:16px;
+      background:#1478ff; color:#fff; font-size:18px; font-weight:900;
+      box-shadow:0 6px 20px #1478ff55;
+    }
+    .routePreviewCard{
+      position:absolute; z-index:1090; left:12px; right:12px; bottom:96px;
+      max-width:620px; margin:auto; background:#fff; border-radius:20px;
+      box-shadow:0 10px 35px #0003; padding:14px; display:none;
+    }
+    .routePreviewCard.show{display:block;}
+    .routePreviewCard h3{margin:0 0 5px;font-size:16px;}
+    .routePreviewMeta{font-size:14px;color:#5d6675;margin-bottom:4px;}
+    .routePreviewDest{font-size:12px;color:#7a8492;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+    @media(max-width:600px){
+      .giroIntro{display:none !important;}
+      .weather{
+        top:176px !important; right:12px !important; max-width:170px !important;
+        font-size:11px !important; padding:8px 9px !important;
+      }
+      .brand{top:176px !important; left:12px !important;}
+      .profileBtn{display:none !important;}
+      .quickbar{
+        top:76px !important;
+        grid-template-columns:repeat(5,minmax(64px,1fr)) !important;
+        gap:4px !important;
+      }
+      .quick{font-size:9px !important;padding:6px 2px !important;min-height:48px !important;}
+      .quick span{font-size:17px !important;}
+      .poibar{
+        top:130px !important; left:12px !important; right:12px !important;
+        width:auto !important; transform:none !important;
+      }
+      .poi{font-size:10px !important;padding:6px 8px !important;}
+      .tools{
+        bottom:10px !important; grid-template-columns:repeat(3,1fr) !important;
+        gap:6px !important;
+      }
+      .tool{min-height:54px !important;font-size:10px !important;padding:7px 3px !important;}
+      .tool span{font-size:20px !important;}
+      .panel{
+        top:auto !important; left:12px !important; right:12px !important;
+        bottom:144px !important; max-height:44vh !important; overflow:auto !important;
+        padding:12px !important;
+      }
+      .routePreviewCard{bottom:148px !important;}
+      .modebar{display:none !important;}
+      body.driving .routePreviewCard{display:none !important;}
+    }
+    
 </style>
 </head>
 <body>
@@ -318,6 +371,13 @@
     <div><small>Tiempo</small><b id="timeHud">—</b></div>
     <div><small>Distancia</small><b id="distanceHud">—</b></div>
   </div>
+</div>
+
+<div class="routePreviewCard" id="routePreviewCard">
+  <h3>Ruta lista</h3>
+  <div class="routePreviewMeta" id="routePreviewMeta">—</div>
+  <div class="routePreviewDest" id="routePreviewDest">Destino</div>
+  <button class="startTripBtn" id="startTripBtn">▶ Iniciar viaje</button>
 </div>
 
 <div class="panel" id="panel"></div>
@@ -638,6 +698,7 @@ function endDrivingMode(showHomeMessage=true){
 
 async function routeTo(r){
   hidePanel();
+  document.getElementById('routePreviewCard')?.classList.remove('show');
   if(!user) return showMsg('Esperando GPS.');
   const place={name:r.display_name||r.name||'Destino',lat:+r.lat,lon:+r.lon};
   addRecent(place);
@@ -654,26 +715,21 @@ async function routeTo(r){
     const mi=rt.distance/1609.344, min=Math.round(rt.duration/60);
     document.getElementById('routeTitle').textContent='Ruta preparada';
     document.getElementById('routeInfo').textContent=`${mi.toFixed(1)} mi · ${min} min`;
-    document.getElementById('routeCard').classList.add('show');
 
+    pendingRoute = rt;
+    pendingPlace = place;
+
+    document.getElementById('routePreviewMeta').textContent = `${mi.toFixed(1)} mi · ${min} min`;
+    document.getElementById('routePreviewDest').textContent = place.name || 'Destino';
+    document.getElementById('routePreviewCard').classList.add('show');
+
+    hidePanel();
+
+    // Keep map visible and route preview clean until user taps Iniciar viaje.
     if(baseMarker){ map.removeLayer(baseMarker); baseMarker=null; }
     if(user){
-      const heading=0;
-      if(!heroMarker) heroMarker=L.marker(user,{icon:heroIcon(heading),zIndexOffset:1000}).addTo(map);
+      if(!heroMarker) heroMarker=L.marker(user,{icon:heroIcon(0),zIndexOffset:1000}).addTo(map);
     }
-    enterDrivingMode(rt, place);
-
-    const firstStep=rt.legs?.[0]?.steps?.[0];
-    if(firstStep){
-      const instr=firstStep.name || firstStep.maneuver?.type || 'Sigue la ruta';
-      document.getElementById('turnText').textContent=instr;
-    }
-
-    // Friendly greeting without blocking the clean driving screen.
-    console.log('MV Navigator: ¡Hola, amigo! Salimos de Base MV. Vamos juntos.');
-
-    const safety=routeSafetyMessage(rt);
-    if(safety) console.log('MV Navigator:', safety);
   }catch(e){ showMsg('No se pudo calcular la ruta.'); }
 }
 
@@ -886,9 +942,23 @@ document.getElementById('driveAudio').onclick=()=>{
 };
 document.getElementById('driveReport').onclick=()=>document.getElementById('reportBtn').click();
 document.getElementById('driveSafety').onclick=openSafetyCenter;
+
+document.getElementById('startTripBtn').onclick=()=>{
+  if(!pendingRoute || !pendingPlace) return;
+  document.getElementById('routePreviewCard').classList.remove('show');
+  enterDrivingMode(pendingRoute, pendingPlace);
+
+  const firstStep=pendingRoute.legs?.[0]?.steps?.[0];
+  if(firstStep){
+    const instr=firstStep.name || firstStep.maneuver?.type || 'Sigue la ruta';
+    document.getElementById('turnText').textContent=instr;
+  }
+};
+
 document.getElementById('driveEnd').onclick=()=>{
   if(routeLayer){map.removeLayer(routeLayer);routeLayer=null;}
   document.getElementById('routeCard').classList.remove('show');
+  document.getElementById('routePreviewCard')?.classList.remove('show');
   endDrivingMode(true);
 };
 

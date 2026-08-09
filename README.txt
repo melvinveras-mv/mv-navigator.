@@ -9,3 +9,12 @@ ACTUALIZACIÓN V9 — SIEMPRE CONTIGO
 
 
 NOMBRE ACTUAL: MV NAVIGATOR — SIEMPRE CONTIGO
+
+
+ACTUALIZACIÓN V10 — CORRECCIÓN MÓVIL
+- Pantalla móvil más limpia
+- Se oculta el mensaje grande de presentación en teléfono
+- Paneles limitados en altura para no tapar todo el mapa
+- Al elegir destino aparece tarjeta clara con distancia, tiempo y botón “Iniciar viaje”
+- La navegación no empieza hasta tocar “Iniciar viaje”
+- Al iniciar viaje se activa el modo conducción limpio
