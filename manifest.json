@@ -1,0 +1,9 @@
+{
+  "name": "MV Navigator — Siempre contigo",
+  "short_name": "MV Navigator",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f2747",
+  "theme_color": "#0f2747",
+  "description": "MV Navigator — Siempre contigo, con internet o sin internet."
+}

@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0f2747" />
+  <link rel="manifest" href="manifest.json" />
+  <title>MV Navigator — Siempre contigo</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    :root { --navy:#0f2747; --blue:#2166f3; --panel:#ffffff; --text:#152033; --danger:#e63946; }
+    * { box-sizing:border-box; }
+    html,body,#map { height:100%; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--text); }
+    #map { background:#dfe8ee; }
+    .top {
+      position:absolute; z-index:1000; top:14px; left:12px; right:12px;
+      display:flex; gap:8px; max-width:760px; margin:auto;
+    }
+    .searchbox { flex:1; background:#fff; border-radius:18px; box-shadow:0 8px 30px #0002; display:flex; overflow:hidden; }
+    .searchbox input { flex:1; border:0; outline:0; padding:15px 16px; font-size:16px; min-width:0; }
+    button { border:0; cursor:pointer; font-weight:700; }
+    .searchbox button { width:48px; background:#fff; font-size:20px; }
+    #searchBtn { background:#2166f3; color:#fff; }
+    #clearSearchBtn { color:#687386; }
+    .poibar {
+      position:absolute; z-index:1000; top:136px; left:50%; transform:translateX(-50%);
+      width:min(760px,calc(100% - 24px)); display:flex; gap:6px; overflow-x:auto; padding:2px;
+      scrollbar-width:none;
+    }
+    .poibar::-webkit-scrollbar { display:none; }
+    .poi {
+      flex:0 0 auto; background:#fff; border-radius:12px; padding:7px 9px; box-shadow:0 5px 18px #0002;
+      font-size:11px; white-space:nowrap;
+    }
+    .poi span { margin-right:4px; }
+    .quickbar {
+      position:absolute; z-index:1000; top:78px; left:50%; transform:translateX(-50%);
+      width:min(760px,calc(100% - 24px)); display:grid; grid-template-columns:repeat(5,1fr); gap:7px;
+    }
+    .quick {
+      background:#fff; border-radius:13px; padding:8px 5px; box-shadow:0 5px 18px #0002;
+      font-size:11px; min-height:54px;
+    }
+    .quick span { display:block; font-size:20px; margin-bottom:2px; }
+    .searchhint { position:absolute; top:58px; left:8px; font-size:11px; color:#fff; background:#0f2747dd; padding:4px 8px; border-radius:8px; box-shadow:0 3px 10px #0002; }
+    .brand {
+      position:absolute; z-index:1000; top:182px; left:16px;
+      background:var(--navy); color:#fff; padding:8px 12px; border-radius:13px; font-weight:900;
+      box-shadow:0 5px 18px #0002;
+    }
+    .weather {
+      position:absolute; z-index:1000; top:182px; right:16px; max-width:250px;
+      background:#fff; padding:10px 12px; border-radius:14px; box-shadow:0 5px 18px #0002; font-size:13px;
+    }
+    .tools {
+      position:absolute; z-index:1000; bottom:18px; left:10px; right:10px; margin:auto;
+      max-width:760px; display:grid; grid-template-columns:repeat(7,1fr); gap:7px;
+    }
+    .tool {
+      background:#fff; border-radius:14px; padding:9px 3px; box-shadow:0 5px 18px #0002;
+      font-size:11px; min-height:58px;
+    }
+    .tool span { display:block; font-size:22px; line-height:24px; margin-bottom:2px; }
+    .tool.primary { background:var(--blue); color:#fff; }
+    .mv-base {
+      width:64px; height:58px; position:relative; filter:drop-shadow(0 3px 3px #0004);
+    }
+    .mv-base .house { position:absolute; left:8px; top:18px; width:48px; height:34px; background:#173c72; border-radius:6px 6px 10px 10px; }
+    .mv-base .roof { position:absolute; left:4px; top:4px; width:0; height:0; border-left:28px solid transparent; border-right:28px solid transparent; border-bottom:24px solid #e33535; }
+    .mv-base .door { position:absolute; left:25px; top:33px; width:14px; height:19px; background:#f4cf42; border-radius:4px 4px 0 0; }
+    .mv-base .badge { position:absolute; left:19px; top:20px; width:26px; height:18px; border-radius:9px; background:#fff; color:#173c72; font-size:10px; font-weight:1000; display:grid; place-items:center; }
+    .hero {
+      width:58px; height:74px; position:relative; transform-origin:29px 45px;
+      filter:drop-shadow(0 3px 3px #0005);
+    }
+    .hero .cape { position:absolute; left:7px; top:27px; width:34px; height:34px; background:#e33535; clip-path:polygon(50% 0,100% 100%,50% 74%,0 100%); }
+    .hero .body { position:absolute; left:12px; top:25px; width:24px; height:32px; background:#173c72; border-radius:9px; }
+    .hero .head { position:absolute; left:15px; top:8px; width:18px; height:18px; background:#f1bd91; border-radius:50%; }
+    .hero .badge { position:absolute; left:15px; top:32px; width:18px; height:18px; border-radius:50%; background:#f4cf42; color:#173c72; font-size:8px; font-weight:1000; display:grid; place-items:center; z-index:2; }
+    .hero .nose { position:absolute; left:21px; top:0; width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:8px solid #111; }
+    .panel {
+      position:absolute; z-index:1100; left:12px; right:12px; bottom:92px; max-width:760px; margin:auto;
+      background:#fff; border-radius:18px; box-shadow:0 10px 35px #0003; padding:13px; display:none;
+    }
+    .panel.open { display:block; }
+    .report-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .report { background:#f3f5f8; border-radius:12px; padding:10px 4px; }
+    .result { padding:10px; border-bottom:1px solid #eee; cursor:pointer; }
+    .route {
+      position:absolute; z-index:1000; left:12px; bottom:92px; background:#fff; padding:10px 13px; border-radius:14px;
+      box-shadow:0 5px 18px #0002; display:none; max-width:330px;
+    }
+    .route.show { display:block; }
+    .tiny { color:#687386; font-size:12px; }
+    @media (max-width:600px) {
+      .poibar {
+      position:absolute; z-index:1000; top:136px; left:50%; transform:translateX(-50%);
+      width:min(760px,calc(100% - 24px)); display:flex; gap:6px; overflow-x:auto; padding:2px;
+      scrollbar-width:none;
+    }
+    .poibar::-webkit-scrollbar { display:none; }
+    .poi {
+      flex:0 0 auto; background:#fff; border-radius:12px; padding:7px 9px; box-shadow:0 5px 18px #0002;
+      font-size:11px; white-space:nowrap;
+    }
+    .poi span { margin-right:4px; }
+    .quickbar { top:76px; grid-template-columns:repeat(5,1fr); gap:5px; }
+      .poibar { top:132px; }
+      .quick { font-size:9px; padding:7px 2px; min-height:50px; }
+      .quick span { font-size:18px; }
+      .searchhint { position:absolute; top:58px; left:8px; font-size:11px; color:#fff; background:#0f2747dd; padding:4px 8px; border-radius:8px; box-shadow:0 3px 10px #0002; }
+    .brand { top:174px; }
+      .weather { top:174px; max-width:210px; }
+      .tools { grid-template-columns:repeat(3,1fr); bottom:10px; }
+      .panel,.route { bottom:145px; }
+    }
+  
+    .brand { display:flex; flex-direction:column; line-height:1; letter-spacing:.5px; }
+    .brand b { font-size:18px; font-style:italic; }
+    .brand small { font-size:9px; margin-top:4px; color:#72dcff; letter-spacing:1.4px; }
+    .hero { animation: giroFly 1.15s ease-in-out infinite alternate; }
+    .hero .cape { animation: capeWave .45s ease-in-out infinite alternate; transform-origin:50% 0; }
+    @keyframes giroFly { from{transform:translateY(2px)} to{transform:translateY(-5px)} }
+    @keyframes capeWave { from{transform:skewX(-5deg) scaleY(.94)} to{transform:skewX(7deg) scaleY(1.08)} }
+
+    .driveHud {
+      position:absolute; z-index:1050; display:none;
+      background:rgba(8,29,52,.94); color:white; border-radius:18px;
+      box-shadow:0 8px 30px #0004; backdrop-filter:blur(8px);
+    }
+    body.driving .driveHud { display:block; }
+    #turnHud { top:16px; left:14px; right:14px; max-width:440px; padding:13px 16px; }
+    #turnHud .turnRow { display:flex; align-items:center; gap:12px; }
+    #turnArrow { font-size:38px; color:#40a8ff; }
+    #turnDistance { font-size:25px; font-weight:900; }
+    #turnText { font-size:14px; opacity:.92; margin-top:2px; }
+    #tripHud { left:14px; right:14px; bottom:18px; margin:auto; max-width:560px; padding:11px 14px; }
+    #tripHud .tripGrid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; text-align:center; }
+    #tripHud b { display:block; font-size:17px; }
+    #tripHud small { opacity:.72; }
+    #driveTools { position:absolute; z-index:1060; right:12px; top:112px; display:none; flex-direction:column; gap:9px; }
+    body.driving #driveTools { display:flex; }
+    .driveTool { width:58px; min-height:58px; border-radius:16px; background:rgba(255,255,255,.96); box-shadow:0 6px 20px #0003; font-size:10px; }
+    .driveTool span { display:block; font-size:22px; }
+    .driveTool.danger { background:#1265e8; color:white; }
+
+    /* Driving mode: keep the road, Giro and only essential controls visible. */
+    body.driving .top,
+    body.driving .quickbar,
+    body.driving .poibar,
+    body.driving .brand,
+    body.driving .weather,
+    body.driving .tools,
+    body.driving .route { display:none !important; }
+    body.driving .leaflet-control-zoom { display:none; }
+    body.driving .panel { bottom:92px; }
+    body.driving #map { filter:saturate(1.18) contrast(1.03); }
+
+    .profileBtn {
+      position:absolute; z-index:1001; left:16px; top:224px;
+      background:#fff; border-radius:14px; padding:8px 11px; box-shadow:0 5px 18px #0002; font-size:12px;
+    }
+    .modebar {
+      position:absolute; z-index:1000; left:50%; transform:translateX(-50%);
+      bottom:88px; width:min(650px,calc(100% - 24px)); display:flex; gap:6px; overflow-x:auto;
+      background:rgba(8,29,52,.9); padding:7px; border-radius:18px; box-shadow:0 7px 25px #0003;
+    }
+    .modeBtn { flex:1 0 auto; min-width:78px; border-radius:12px; padding:8px 10px; background:transparent; color:white; }
+    .modeBtn.active { background:#1478ff; }
+    body.driving .modebar, body.driving .profileBtn { display:none; }
+
+    @media (max-width:600px){
+      .profileBtn { top:216px; }
+      #turnHud { max-width:none; }
+      #driveTools { top:118px; }
+      #tripHud { bottom:12px; }
+      .modebar { bottom:150px; }
+    }
+
+  
+    .giroClock{
+      position:absolute; z-index:1070; left:14px; top:108px; display:none;
+      min-width:92px; padding:7px 10px; border-radius:12px;
+      background:rgba(255,255,255,.94); color:#e31f2b; font-size:23px;
+      font-weight:1000; text-align:center; box-shadow:0 5px 18px #0003;
+      text-shadow:0 1px 0 #fff;
+    }
+    body.driving .giroClock{display:block;}
+    .musicMini{
+      position:absolute; z-index:1070; left:14px; bottom:96px; display:none;
+      width:min(245px,calc(100% - 95px)); padding:8px 10px; border-radius:15px;
+      background:rgba(8,29,52,.94); color:#fff; box-shadow:0 7px 24px #0004;
+    }
+    body.driving .musicMini.show{display:block;}
+    .musicRow{display:flex;align-items:center;gap:8px;}
+    .musicLogo{font-size:23px;}
+    .musicMeta{flex:1;min-width:0;font-size:11px;}
+    .musicMeta b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .musicCtl{width:34px;height:34px;border-radius:50%;background:#fff;font-size:15px;}
+    .settingRow{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+    .settingChip{padding:8px 10px;border-radius:12px;background:#edf3fb;font-size:11px;}
+    .settingChip.active{background:#1478ff;color:white;}
+    body.night #map{filter:brightness(.72) saturate(.9) contrast(1.12);}
+    body.night .driveHud, body.night .musicMini{background:rgba(4,13,28,.96);}
+    @media(max-width:600px){
+      .giroClock{top:116px;font-size:21px;}
+      .musicMini{bottom:88px;}
+    }
+    
+
+    .giroIntro{
+      position:absolute; z-index:1002; left:50%; transform:translateX(-50%);
+      top:245px; width:min(680px,calc(100% - 24px));
+      background:linear-gradient(135deg,rgba(10,38,72,.96),rgba(20,120,255,.94));
+      color:white; border-radius:18px; padding:12px 14px; box-shadow:0 8px 28px #0003;
+    }
+    .giroIntro b{font-size:15px;display:block;margin-bottom:3px}
+    .giroIntro span{font-size:12px;opacity:.92}
+    .connectionBadge{
+      position:absolute; z-index:1100; right:14px; top:15px;
+      padding:7px 10px; border-radius:12px; font-size:11px; font-weight:800;
+      background:#e8fff0; color:#126c34; box-shadow:0 5px 18px #0002;
+    }
+    .connectionBadge.offline{background:#fff2e1;color:#9a4c00;}
+    body.driving .giroIntro, body.driving .connectionBadge{display:none;}
+    @media(max-width:600px){
+      .giroIntro{top:235px;padding:10px 12px}
+      .giroIntro b{font-size:14px}
+      .giroIntro span{font-size:11px}
+    }
+    
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="connectionBadge" id="connectionBadge">● Con internet</div>
+
+<div class="top">
+  <div class="searchbox">
+    <input id="search" placeholder="Escribe una dirección, negocio o lugar" autocomplete="off" aria-label="Buscar dirección">
+    <button id="clearSearchBtn" title="Borrar búsqueda">✕</button><button id="searchBtn" title="Buscar">⌕</button>
+  </div>
+  <div class="searchhint">Ejemplo: 123 Main St, Boston, MA</div>
+</div>
+
+<div class="quickbar">
+  <button class="quick" data-slot="home"><span>🏠</span>Casa</button>
+  <button class="quick" data-slot="work"><span>💼</span>Trabajo</button>
+  <button class="quick" data-slot="school"><span>🏫</span>Escuela</button>
+  <button class="quick" id="favoritesBtn"><span>⭐</span>Favoritos</button>
+  <button class="quick" id="recentsBtn"><span>🕘</span>Recientes</button>
+</div>
+
+<div class="poibar" id="poiBar">
+  <button class="poi" data-poi="supermarket"><span>🛒</span>Tiendas</button>
+  <button class="poi" data-poi="pharmacy"><span>💊</span>Farmacia</button>
+  <button class="poi" data-poi="fuel"><span>⛽</span>Gasolina</button>
+  <button class="poi" data-poi="hospital"><span>🏥</span>Hospital</button>
+  <button class="poi" data-poi="restaurant"><span>🍽️</span>Restaurante</button>
+  <button class="poi" data-poi="parking"><span>🅿️</span>Parqueo</button>
+  <button class="poi" data-poi="toilets"><span>🚻</span>Baños</button>
+  <button class="poi" data-poi="rest_area"><span>🛣️</span>Descanso</button>
+</div>
+
+<div class="brand"><b>MV NAVIGATOR</b><small>SIEMPRE CONTIGO</small></div>
+<div class="weather" id="weather">🌤️ Activando clima…</div>
+<div class="giroIntro" id="giroIntro">
+  <b>MV Navigator — Siempre contigo</b>
+  <span>Siempre contigo, con o sin internet. Tu copiloto inteligente para cada ruta.</span>
+</div>
+<button class="profileBtn" id="profileBtn">👤 Personalizar</button>
+<div class="modebar" id="modebar">
+  <button class="modeBtn active" data-mode="car">🚗 Carro</button>
+  <button class="modeBtn" data-mode="walk">🚶 Caminando</button>
+  <button class="modeBtn" data-mode="run">🏃 Corriendo</button>
+  <button class="modeBtn" data-mode="bike">🚲 Bicicleta</button>
+  <button class="modeBtn" data-mode="train">🚆 Tren</button>
+</div>
+
+<div class="route" id="routeCard">
+  <strong id="routeTitle">Ruta lista</strong><br>
+  <span id="routeInfo"></span>
+</div>
+
+<div class="giroClock" id="giroClock">--:--</div>
+<div class="musicMini" id="musicMini">
+  <div class="musicRow">
+    <div class="musicLogo" id="musicLogo">🎵</div>
+    <div class="musicMeta"><b id="musicTitle">Música</b><span id="musicSource">YouTube / Spotify</span></div>
+    <button class="musicCtl" id="musicPrev">⏮</button>
+    <button class="musicCtl" id="musicPlay">▶</button>
+    <button class="musicCtl" id="musicNext">⏭</button>
+  </div>
+</div>
+
+<div class="driveHud" id="turnHud">
+  <div class="turnRow">
+    <div id="turnArrow">↗</div>
+    <div>
+      <div id="turnDistance">Ruta activa</div>
+      <div id="turnText">MV Giro te guía</div>
+    </div>
+  </div>
+</div>
+
+<div id="driveTools">
+  <button class="driveTool" id="driveAudio"><span>🔊</span>Audio</button>
+  <button class="driveTool" id="driveMusic"><span>🎵</span>Música</button>
+  <button class="driveTool" id="driveReport"><span>⚠️</span>Reportar</button>
+  <button class="driveTool danger" id="driveSafety"><span>🛡️</span>911</button>
+  <button class="driveTool" id="driveEnd"><span>🏁</span>Terminar</button>
+</div>
+
+<div class="driveHud" id="tripHud">
+  <div class="tripGrid">
+    <div><small>Llegada</small><b id="etaHud">—</b></div>
+    <div><small>Tiempo</small><b id="timeHud">—</b></div>
+    <div><small>Distancia</small><b id="distanceHud">—</b></div>
+  </div>
+</div>
+
+<div class="panel" id="panel"></div>
+
+<div class="tools">
+  <button class="tool primary" id="reportBtn"><span>⚠️</span>Reportar</button>
+  <button class="tool" id="parkingBtn"><span>🅿️</span>Parqueo pago</button>
+  <button class="tool" id="cameraBtn"><span>📷</span>Cámaras</button>
+  <button class="tool" id="weatherBtn"><span>🌦️</span>Clima</button>
+  <button class="tool" id="locateBtn"><span>🎯</span>Mi ubicación</button>
+  <button class="tool" id="offlineBtn"><span>📥</span>Sin internet</button>
+  <button class="tool" id="tripPrefsBtn"><span>⚙️</span>Viaje</button>
+  <button class="tool" id="safetyBtn"><span>🛡️</span>Seguridad</button>
+  <button class="tool" id="closeBtn"><span>✕</span>Limpiar</button>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map = L.map('map', {zoomControl:false}).setView([42.36,-71.06], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom:19, attribution:'© OpenStreetMap contributors'
+}).addTo(map);
+L.control.zoom({position:'bottomright'}).addTo(map);
+
+let user = null, heroMarker = null, baseMarker = null, routeLayer = null, heroTrailLayer = null, destination = null;
+let reportMarkers = [], parkingMarkers = [];
+let navigationStarted = false;
+let heroTrailPoints = [];
+let selectedMode = 'car';
+const panel = document.getElementById('panel');
+
+function baseIcon(){
+  return L.divIcon({
+    className:'',
+    iconSize:[64,58], iconAnchor:[32,44],
+    html:`<div class="mv-base">
+      <div class="roof"></div><div class="house"></div><div class="door"></div><div class="badge">MV</div>
+    </div>`
+  });
+}
+
+function heroIcon(heading=0) {
+  return L.divIcon({
+    className:'',
+    iconSize:[58,74], iconAnchor:[29,45],
+    html:`<div class="hero" style="transform:rotate(${heading||0}deg)">
+      <div class="cape"></div><div class="body"></div><div class="head"></div>
+      <div class="badge">MV</div><div class="nose"></div></div>`
+  });
+}
+function showMsg(html){ panel.innerHTML=html; panel.classList.add('open'); }
+function hidePanel(){ panel.classList.remove('open'); }
+
+function updateHero(pos) {
+  user = [pos.coords.latitude, pos.coords.longitude];
+  const heading = Number.isFinite(pos.coords.heading) ? pos.coords.heading : 0;
+
+  if(navigationStarted){
+    if(baseMarker){ map.removeLayer(baseMarker); baseMarker=null; }
+    if (!heroMarker) heroMarker = L.marker(user,{icon:heroIcon(heading),zIndexOffset:1000}).addTo(map);
+    else { heroMarker.setLatLng(user); heroMarker.setIcon(heroIcon(heading)); }
+
+    heroTrailPoints.push(user);
+    if(heroTrailPoints.length > 120) heroTrailPoints.shift();
+    if(heroTrailLayer) map.removeLayer(heroTrailLayer);
+    heroTrailLayer = L.polyline(heroTrailPoints,{
+      weight:5, opacity:.75, color:'#45d8ff', dashArray:'1 8', lineCap:'round'
+    }).addTo(map);
+
+    if(navigationStarted) map.panTo(user,{animate:true,duration:.5});
+  } else {
+    if(heroMarker){ map.removeLayer(heroMarker); heroMarker=null; }
+    if(!baseMarker) baseMarker = L.marker(user,{icon:baseIcon(),zIndexOffset:900}).addTo(map);
+    else baseMarker.setLatLng(user);
+  }
+
+  if (!map._mvCentered) { map.setView(user,16); map._mvCentered=true; }
+}
+
+function startLocation(){
+  if(!navigator.geolocation){ showMsg('Este navegador no permite GPS.'); return; }
+  navigator.geolocation.watchPosition(updateHero, e=>{
+    showMsg('No pudimos activar tu ubicación. Permite el GPS en el navegador.');
+  }, {enableHighAccuracy:true, maximumAge:2000, timeout:12000});
+}
+startLocation();
+
+async function weather(){
+  if(!user) return showMsg('Esperando tu ubicación para consultar el clima.');
+  const [lat,lon]=user;
+  const u=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,precipitation,rain,snowfall,weather_code,wind_speed_10m&hourly=precipitation_probability,rain,snowfall,temperature_2m&forecast_days=2&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=auto`;
+  try{
+    const d=await fetch(u).then(r=>r.json());
+    const c=d.current||{};
+    const h=d.hourly||{}, now=Date.now();
+    let nextRain=null,nextSnow=null,maxProb=0;
+    (h.time||[]).forEach((t,i)=>{
+      const tm=new Date(t).getTime();
+      if(tm>=now && tm<=now+12*3600e3){
+        maxProb=Math.max(maxProb, h.precipitation_probability?.[i]||0);
+        if(nextRain===null && (h.rain?.[i]||0)>0) nextRain=t;
+        if(nextSnow===null && (h.snowfall?.[i]||0)>0) nextSnow=t;
+      }
+    });
+    const text=`🌡️ <b>${Math.round(c.temperature_2m ?? 0)}°F</b> · viento ${Math.round(c.wind_speed_10m ?? 0)} mph<br>
+      ☔ Prob. precipitación próximas 12 h: <b>${maxProb}%</b><br>
+      ${nextSnow ? '❄️ Nieve prevista: '+new Date(nextSnow).toLocaleTimeString([], {hour:'numeric'}) :
+        nextRain ? '🌧️ Lluvia prevista: '+new Date(nextRain).toLocaleTimeString([], {hour:'numeric'}) :
+        '✅ Sin lluvia/nieve inmediata detectada'}`;
+    document.getElementById('weather').innerHTML=text;
+    return text;
+  }catch(e){ document.getElementById('weather').innerHTML='Clima no disponible'; }
+}
+setInterval(weather, 10*60*1000);
+setTimeout(weather,2500);
+
+
+const STORAGE_KEY='mvNavigatorSavedPlacesV1';
+const RECENTS_KEY='mvNavigatorRecentsV1';
+const FAVORITES_KEY='mvNavigatorFavoritesV1';
+
+function loadJSON(key, fallback){
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+  catch(e){ return fallback; }
+}
+function saveJSON(key,value){ localStorage.setItem(key,JSON.stringify(value)); }
+
+function savedPlaces(){ return loadJSON(STORAGE_KEY,{}); }
+function saveSlot(slot, place){
+  const data=savedPlaces();
+  data[slot]=place;
+  saveJSON(STORAGE_KEY,data);
+}
+function addRecent(place){
+  const list=loadJSON(RECENTS_KEY,[]);
+  const dedup=[place,...list.filter(x=>!(x.lat===place.lat && x.lon===place.lon))].slice(0,8);
+  saveJSON(RECENTS_KEY,dedup);
+}
+function addFavorite(place){
+  const list=loadJSON(FAVORITES_KEY,[]);
+  if(!list.some(x=>x.lat===place.lat && x.lon===place.lon)){
+    list.unshift(place); saveJSON(FAVORITES_KEY,list.slice(0,20));
+  }
+}
+function slotLabel(slot){
+  return slot==='home'?'Casa':slot==='work'?'Trabajo':'Escuela';
+}
+function chooseForSlot(slot){
+  const label=slotLabel(slot);
+  showMsg(`<b>Configurar ${label}</b><br>
+    <span class="tiny">Busca la dirección arriba y después toca “Guardar como ${label}” en el resultado.</span><br><br>
+    <button class="report" id="clearSlot">Borrar ${label}</button>`);
+  const clear=document.getElementById('clearSlot');
+  if(clear) clear.onclick=()=>{
+    const data=savedPlaces(); delete data[slot]; saveJSON(STORAGE_KEY,data);
+    hidePanel(); alert(`${label} borrado.`);
+  };
+}
+function showList(title,list){
+  if(!list.length) return showMsg(`<b>${title}</b><br><span class="tiny">Todavía no hay lugares guardados aquí.</span>`);
+  showMsg(`<b>${title}</b>${list.map((p,i)=>`<div class="result" data-list-i="${i}">${p.name||'Lugar guardado'}</div>`).join('')}`);
+  panel.querySelectorAll('[data-list-i]').forEach(el=>{
+    el.onclick=()=>routeTo(list[+el.dataset.listI]);
+  });
+}
+
+
+async function findNearbyPoi(type){
+  if(!user) return showMsg('Esperando tu ubicación GPS.');
+  const [lat,lon]=user;
+
+  const mapType = {
+    supermarket: ['shop','supermarket'],
+    pharmacy: ['amenity','pharmacy'],
+    fuel: ['amenity','fuel'],
+    hospital: ['amenity','hospital'],
+    restaurant: ['amenity','restaurant'],
+    parking: ['amenity','parking'],
+    toilets: ['amenity','toilets'],
+    rest_area: ['highway','rest_area']
+  }[type];
+
+  const labels = {
+    supermarket:'Tiendas', pharmacy:'Farmacias', fuel:'Gasolineras',
+    hospital:'Hospitales', restaurant:'Restaurantes', parking:'Parqueo',
+    toilets:'Baños', rest_area:'Áreas de descanso'
+  };
+
+  if(!mapType) return;
+  showMsg(`Buscando ${labels[type].toLowerCase()} cercanos…`);
+
+  const [k,v]=mapType;
+  const query=`[out:json][timeout:20];(
+    node["${k}"="${v}"](around:12000,${lat},${lon});
+    way["${k}"="${v}"](around:12000,${lat},${lon});
+    relation["${k}"="${v}"](around:12000,${lat},${lon});
+  );out center tags 30;`;
+
+  try{
+    const d=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:query}).then(r=>r.json());
+    const places=(d.elements||[]).map(e=>{
+      const la=e.lat??e.center?.lat, lo=e.lon??e.center?.lon, t=e.tags||{};
+      if(la==null||lo==null) return null;
+      return {name:t.name||labels[type].slice(0,-1)||'Lugar',lat:+la,lon:+lo};
+    }).filter(Boolean);
+
+    if(!places.length) return showMsg(`<b>${labels[type]}</b><br>No encontramos resultados cercanos en los datos disponibles.`);
+
+    showMsg(`<b>${labels[type]}</b>`+
+      places.map((p,i)=>`<div class="result poi-result" data-i="${i}">${p.name}<br><span class="tiny">Toca para calcular la ruta</span></div>`).join(''));
+
+    panel.querySelectorAll('.poi-result').forEach(el=>{
+      el.onclick=()=>routeTo(places[+el.dataset.i]);
+    });
+  }catch(e){
+    showMsg(`No se pudo consultar ${labels[type].toLowerCase()} en este momento.`);
+  }
+}
+
+document.querySelectorAll('.poi').forEach(btn=>{
+  btn.onclick=()=>findNearbyPoi(btn.dataset.poi);
+});
+
+function routeSafetyMessage(route){
+  // OSRM public demo data does not reliably expose every STOP sign or road curvature.
+  // We give safe generic route-aware alerts only when we can infer a strong maneuver.
+  try{
+    const steps=route.legs?.[0]?.steps||[];
+    for(const s of steps.slice(0,8)){
+      const man=s.maneuver||{};
+      const modifier=(man.modifier||'').toLowerCase();
+      const type=(man.type||'').toLowerCase();
+      if(modifier.includes('sharp')){
+        return '🌀 Amigo, curva fuerte más adelante. Reduce la velocidad.';
+      }
+      if(type==='roundabout'){
+        return '🔄 Amigo, rotonda más adelante. Mantente atento.';
+      }
+    }
+  }catch(e){}
+  return null;
+}
+
+async function searchPlace(){
+  const q=document.getElementById('search').value.trim();
+  if(!q) return;
+  showMsg('Buscando…');
+  const url='https://nominatim.openstreetmap.org/search?format=json&limit=5&q='+encodeURIComponent(q);
+  try{
+    const res=await fetch(url,{headers:{'Accept-Language':'es'}}).then(r=>r.json());
+    if(!res.length) return showMsg('No encontré ese destino.');
+    showMsg('<b>Resultados</b>'+res.map((r,i)=>`
+      <div class="result">
+        <div class="route-choice" data-i="${i}" style="font-weight:700">${r.display_name}</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:7px">
+          <button class="report save-slot" data-i="${i}" data-slot="home">🏠 Casa</button>
+          <button class="report save-slot" data-i="${i}" data-slot="work">💼 Trabajo</button>
+          <button class="report save-slot" data-i="${i}" data-slot="school">🏫 Escuela</button>
+          <button class="report save-fav" data-i="${i}">⭐ Favorito</button>
+        </div>
+      </div>`).join(''));
+    [...panel.querySelectorAll('.route-choice')].forEach(el=>el.onclick=()=>routeTo(res[+el.dataset.i]));
+    [...panel.querySelectorAll('.save-slot')].forEach(el=>el.onclick=(ev)=>{
+      ev.stopPropagation();
+      const r=res[+el.dataset.i];
+      const place={name:r.display_name,lat:+r.lat,lon:+r.lon};
+      saveSlot(el.dataset.slot,place);
+      showMsg(`<b>${slotLabel(el.dataset.slot)} guardado</b><br>${place.name}`);
+    });
+    [...panel.querySelectorAll('.save-fav')].forEach(el=>el.onclick=(ev)=>{
+      ev.stopPropagation();
+      const r=res[+el.dataset.i];
+      const place={name:r.display_name,lat:+r.lat,lon:+r.lon};
+      addFavorite(place);
+      showMsg(`<b>Favorito guardado ⭐</b><br>${place.name}`);
+    });
+  }catch(e){ showMsg('No se pudo buscar el destino.'); }
+}
+document.getElementById('searchBtn').onclick=searchPlace;
+document.getElementById('clearSearchBtn').onclick=()=>{
+  document.getElementById('search').value='';
+  hidePanel();
+  document.getElementById('search').focus();
+};
+document.getElementById('search').addEventListener('keydown',e=>{if(e.key==='Enter')searchPlace()});
+
+
+function enterDrivingMode(route, place){
+  navigationStarted=true;
+  document.body.classList.add('driving');
+  const mi=route.distance/1609.344;
+  const mins=Math.max(1,Math.round(route.duration/60));
+  const eta=new Date(Date.now()+route.duration*1000);
+  document.getElementById('timeHud').textContent=`${mins} min`;
+  document.getElementById('distanceHud').textContent=`${mi.toFixed(1)} mi`;
+  document.getElementById('etaHud').textContent=eta.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  document.getElementById('turnDistance').textContent='Ruta iniciada';
+  document.getElementById('turnText').textContent=place.name || 'MV Giro te guía';
+  heroTrailPoints=[];
+  if(giroVoiceLevel==='intensive'){
+    document.getElementById('turnText').textContent='MV Navigator activo: te avisaré con anticipación de salidas y carriles disponibles.';
+  }
+  if(heroTrailLayer){map.removeLayer(heroTrailLayer); heroTrailLayer=null;}
+}
+
+function endDrivingMode(showHomeMessage=true){
+  navigationStarted=false;
+  document.body.classList.remove('driving');
+  heroTrailPoints=[];
+  if(heroTrailLayer){map.removeLayer(heroTrailLayer); heroTrailLayer=null;}
+  if(heroMarker){map.removeLayer(heroMarker);heroMarker=null;}
+  if(user){
+    if(baseMarker) map.removeLayer(baseMarker);
+    baseMarker=L.marker(user,{icon:baseIcon(),zIndexOffset:900}).addTo(map);
+  }
+  if(showHomeMessage) setTimeout(()=>showMsg(`<b>MV Navigator</b><br>🏠 Llegamos, amigo. MV Giro vuelve a Base MV.`),120);
+}
+
+async function routeTo(r){
+  hidePanel();
+  if(!user) return showMsg('Esperando GPS.');
+  const place={name:r.display_name||r.name||'Destino',lat:+r.lat,lon:+r.lon};
+  addRecent(place);
+  destination=[place.lat,place.lon];
+  const url=`https://router.project-osrm.org/route/v1/driving/${user[1]},${user[0]};${destination[1]},${destination[0]}?overview=full&geometries=geojson&steps=true`;
+  try{
+    const d=await fetch(url).then(r=>r.json());
+    if(!d.routes?.length) return showMsg('No se encontró ruta.');
+    const rt=d.routes[0];
+    if(routeLayer) map.removeLayer(routeLayer);
+    const coords=rt.geometry.coordinates.map(c=>[c[1],c[0]]);
+    routeLayer=L.polyline(coords,{weight:7,opacity:.9}).addTo(map);
+    map.fitBounds(routeLayer.getBounds(),{padding:[45,45]});
+    const mi=rt.distance/1609.344, min=Math.round(rt.duration/60);
+    document.getElementById('routeTitle').textContent='Ruta preparada';
+    document.getElementById('routeInfo').textContent=`${mi.toFixed(1)} mi · ${min} min`;
+    document.getElementById('routeCard').classList.add('show');
+
+    if(baseMarker){ map.removeLayer(baseMarker); baseMarker=null; }
+    if(user){
+      const heading=0;
+      if(!heroMarker) heroMarker=L.marker(user,{icon:heroIcon(heading),zIndexOffset:1000}).addTo(map);
+    }
+    enterDrivingMode(rt, place);
+
+    const firstStep=rt.legs?.[0]?.steps?.[0];
+    if(firstStep){
+      const instr=firstStep.name || firstStep.maneuver?.type || 'Sigue la ruta';
+      document.getElementById('turnText').textContent=instr;
+    }
+
+    // Friendly greeting without blocking the clean driving screen.
+    console.log('MV Navigator: ¡Hola, amigo! Salimos de Base MV. Vamos juntos.');
+
+    const safety=routeSafetyMessage(rt);
+    if(safety) console.log('MV Navigator:', safety);
+  }catch(e){ showMsg('No se pudo calcular la ruta.'); }
+}
+
+
+document.querySelectorAll('.quick[data-slot]').forEach(btn=>{
+  btn.onclick=()=>{
+    const slot=btn.dataset.slot;
+    const place=savedPlaces()[slot];
+    if(place) routeTo(place);
+    else chooseForSlot(slot);
+  };
+});
+document.getElementById('favoritesBtn').onclick=()=>showList('⭐ Favoritos',loadJSON(FAVORITES_KEY,[]));
+document.getElementById('recentsBtn').onclick=()=>showList('🕘 Recientes',loadJSON(RECENTS_KEY,[]));
+
+
+function openSafetyCenter(){
+  showMsg(`<b>🛡️ Centro de Seguridad</b><div class="report-grid" style="margin-top:10px">
+    <button class="report" id="emergency911">☎️<br>Emergencia 911</button>
+    <button class="report" id="policeStations">👮<br>Policía cercana</button>
+    <button class="report" id="shareLocation">📍<br>Mi ubicación</button>
+  </div>
+  <p class="tiny">911 no se llama automáticamente. MV Navigator abre el marcador y tú decides si realizas la llamada. Los avisos de STOP y curvas se mostrarán cuando los datos de la ruta permitan detectarlos con fiabilidad.</p>`);
+
+  document.getElementById('emergency911').onclick=()=>{
+    const ok=confirm('¿Quieres abrir el marcador del teléfono con 911 preparado? La llamada NO se realizará automáticamente.');
+    if(ok) window.location.href='tel:911';
+  };
+
+  document.getElementById('policeStations').onclick=findPoliceStations;
+
+  document.getElementById('shareLocation').onclick=()=>{
+    if(!user) return showMsg('Esperando tu ubicación GPS.');
+    showMsg(`<b>📍 Tu ubicación actual</b><br>${user[0].toFixed(6)}, ${user[1].toFixed(6)}<br>
+      <span class="tiny">En una versión posterior podremos añadir compartir ubicación mediante las funciones nativas del teléfono.</span>`);
+  };
+}
+
+async function findPoliceStations(){
+  if(!user) return showMsg('Esperando tu ubicación GPS.');
+  showMsg('Buscando estaciones de policía cercanas…');
+  const [lat,lon]=user;
+  const query=`[out:json][timeout:20];(node["amenity"="police"](around:20000,${lat},${lon});way["amenity"="police"](around:20000,${lat},${lon});relation["amenity"="police"](around:20000,${lat},${lon}););out center tags 25;`;
+  try{
+    const d=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:query}).then(r=>r.json());
+    const places=(d.elements||[]).map(e=>{
+      const la=e.lat??e.center?.lat, lo=e.lon??e.center?.lon, t=e.tags||{};
+      if(la==null||lo==null) return null;
+      return {name:t.name||'Estación de policía',lat:+la,lon:+lo};
+    }).filter(Boolean);
+
+    if(!places.length) return showMsg('<b>Policía cercana</b><br>No encontramos estaciones en los datos disponibles de esta zona.');
+
+    showMsg('<b>👮 Estaciones de policía cercanas</b>'+
+      places.map((p,i)=>`<div class="result police-result" data-i="${i}">${p.name}<br><span class="tiny">Toca para calcular la ruta</span></div>`).join(''));
+
+    panel.querySelectorAll('.police-result').forEach(el=>{
+      el.onclick=()=>routeTo(places[+el.dataset.i]);
+    });
+  }catch(e){
+    showMsg('No se pudo consultar estaciones de policía en este momento.');
+  }
+}
+
+document.getElementById('safetyBtn').onclick=openSafetyCenter;
+
+document.getElementById('profileBtn').onclick=()=>{
+  const savedEmail=localStorage.getItem('giroEmail')||'';
+  showMsg(`<b>👤 Personaliza GIRO</b><br>
+    <span class="tiny">Guarda tu correo en este dispositivo para identificar tus preferencias durante esta prueba.</span>
+    <input id="giroEmailInput" type="email" placeholder="tu@correo.com" value="${savedEmail}"
+      style="width:100%;margin:10px 0;padding:12px;border:1px solid #ccd4df;border-radius:12px">
+    <button class="report" id="saveGiroEmail" style="width:100%;background:#1478ff;color:white">Guardar correo</button>`);
+  document.getElementById('saveGiroEmail').onclick=()=>{
+    const v=document.getElementById('giroEmailInput').value.trim();
+    if(v) localStorage.setItem('giroEmail',v);
+    hidePanel();
+  };
+};
+
+document.querySelectorAll('.modeBtn').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('.modeBtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMode=btn.dataset.mode;
+    if(selectedMode==='train'){
+      showMsg('<b>🚆 Tren</b><br>El modo tren está visible para la prueba. Para horarios y rutas reales necesitaremos conectar datos de transporte público de cada región.');
+    } else if(selectedMode!=='car'){
+      showMsg(`<b>${btn.textContent.trim()}</b><br><span class="tiny">Selector agregado. En esta versión web, el cálculo de ruta principal todavía está optimizado para carro; conectaremos rutas específicas para este modo en la siguiente fase.</span>`);
+    }
+  };
+});
+
+
+
+
+
+let giroVoiceLevel=localStorage.getItem('giroVoiceLevel')||'intensive';
+let avoidTolls=localStorage.getItem('giroAvoidTolls')==='true';
+let musicProvider=localStorage.getItem('giroMusicProvider')||'youtube';
+let musicPlaying=false;
+
+function updateGiroClock(){
+  const el=document.getElementById('giroClock');
+  if(el) el.textContent=new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+}
+updateGiroClock(); setInterval(updateGiroClock,15000);
+
+function applyAutoNight(){
+  const h=new Date().getHours();
+  document.body.classList.toggle('night',h<6||h>=19);
+}
+applyAutoNight(); setInterval(applyAutoNight,60000);
+
+function openTripPrefs(){
+  showMsg(`<b>⚙️ Preferencias de viaje</b>
+    <div style="margin-top:10px"><b>Voz de GIRO</b>
+      <div class="settingRow">
+        <button class="settingChip voiceChip" data-v="calm">Tranquila</button>
+        <button class="settingChip voiceChip" data-v="normal">Normal</button>
+        <button class="settingChip voiceChip" data-v="intensive">Intensiva</button>
+      </div>
+      <p class="tiny">Intensiva prepara avisos anticipados de carril, intersecciones y salidas cuando la fuente de navegación proporcione esos datos.</p>
+    </div>
+    <div><b>Peajes</b>
+      <div class="settingRow">
+        <button class="settingChip tollChip" data-v="allow">Permitir peajes</button>
+        <button class="settingChip tollChip" data-v="avoid">Evitar peajes</button>
+      </div>
+      <p class="tiny">La comparación real de rutas y costos de peaje requiere un proveedor de rutas con datos de peajes.</p>
+    </div>
+    <div><b>Paradas de viaje</b>
+      <div class="settingRow">
+        <button class="settingChip stopChip" data-poi="fuel">⛽ Gasolina</button>
+        <button class="settingChip stopChip" data-poi="toilets">🚻 Baño</button>
+        <button class="settingChip stopChip" data-poi="restaurant">🍽️ Comida</button>
+        <button class="settingChip stopChip" data-poi="rest_area">🛣️ Descanso</button>
+      </div>
+      <p class="tiny">Puedes buscar una parada cercana ahora; la planificación de múltiples paradas sobre una ruta larga será la siguiente integración.</p>
+    </div>`);
+  panel.querySelectorAll('.voiceChip').forEach(b=>{
+    if(b.dataset.v===giroVoiceLevel)b.classList.add('active');
+    b.onclick=()=>{giroVoiceLevel=b.dataset.v;localStorage.setItem('giroVoiceLevel',giroVoiceLevel);openTripPrefs();};
+  });
+  panel.querySelectorAll('.tollChip').forEach(b=>{
+    if((b.dataset.v==='avoid')===avoidTolls)b.classList.add('active');
+    b.onclick=()=>{avoidTolls=b.dataset.v==='avoid';localStorage.setItem('giroAvoidTolls',avoidTolls);openTripPrefs();};
+  });
+  panel.querySelectorAll('.stopChip').forEach(b=>b.onclick=()=>findNearbyPoi(b.dataset.poi));
+}
+document.getElementById('tripPrefsBtn').onclick=openTripPrefs;
+
+function updateConnectionBadge(){
+  const badge=document.getElementById('connectionBadge');
+  if(!badge) return;
+  if(navigator.onLine){
+    badge.textContent='● Con internet';
+    badge.classList.remove('offline');
+  }else{
+    badge.textContent='● Modo sin internet';
+    badge.classList.add('offline');
+  }
+}
+window.addEventListener('online',updateConnectionBadge);
+window.addEventListener('offline',updateConnectionBadge);
+updateConnectionBadge();
+
+document.getElementById('offlineBtn').onclick=()=>{
+  showMsg(`<b>📥 Preparar MV Navigator sin internet</b><br>
+    <span class="tiny">Esta prueba guarda la interfaz de MV Navigator para que pueda abrirse aunque se pierda la conexión.</span>
+    <div style="margin-top:10px;padding:10px;border-radius:12px;background:#edf3fb">
+      <b>Próxima integración real</b><br>
+      <span class="tiny">Descarga automática del mapa de tu zona y de una ruta antes de salir, para seguir navegando con GPS y voz aunque no haya señal.</span>
+    </div>
+    <p class="tiny">Para navegación offline completa necesitamos un proveedor de mapas/rutas que permita descargar mapas y datos de navegación localmente.</p>`);
+};
+
+
+function openMusic(){
+  showMsg(`<b>🎵 Música en MV Navigator</b><br>
+    <span class="tiny">Elige el servicio. En la prueba mostramos el mini reproductor; la reproducción real requiere la integración oficial y autorización del usuario.</span>
+    <div class="settingRow">
+      <button class="settingChip musicProvider" data-v="youtube">▶️ YouTube</button>
+      <button class="settingChip musicProvider" data-v="spotify">🟢 Spotify</button>
+    </div>
+    <p class="tiny">Durante la conducción MV Navigator mantendrá el mapa como pantalla principal. Cuando conectemos audio real, la música deberá bajar de volumen durante instrucciones importantes.</p>`);
+  panel.querySelectorAll('.musicProvider').forEach(b=>{
+    if(b.dataset.v===musicProvider)b.classList.add('active');
+    b.onclick=()=>{
+      musicProvider=b.dataset.v;localStorage.setItem('giroMusicProvider',musicProvider);
+      document.getElementById('musicLogo').textContent=musicProvider==='spotify'?'🟢':'▶️';
+      document.getElementById('musicSource').textContent=musicProvider==='spotify'?'Spotify':'YouTube';
+      document.getElementById('musicMini').classList.add('show');
+      hidePanel();
+    };
+  });
+}
+document.getElementById('driveMusic').onclick=openMusic;
+document.getElementById('musicPlay').onclick=()=>{
+  musicPlaying=!musicPlaying;
+  document.getElementById('musicPlay').textContent=musicPlaying?'⏸':'▶';
+  document.getElementById('musicTitle').textContent=musicPlaying?'Demo de música':'Música en pausa';
+};
+document.getElementById('musicPrev').onclick=()=>document.getElementById('musicTitle').textContent='Pista anterior · demo';
+document.getElementById('musicNext').onclick=()=>document.getElementById('musicTitle').textContent='Siguiente pista · demo';
+
+
+document.getElementById('driveAudio').onclick=()=>{
+  showMsg('<b>🔊 Audio GIRO</b><br>La voz de navegación estará disponible en la siguiente integración. La idea es una voz cálida: “Amigo, gira a la derecha”.');
+};
+document.getElementById('driveReport').onclick=()=>document.getElementById('reportBtn').click();
+document.getElementById('driveSafety').onclick=openSafetyCenter;
+document.getElementById('driveEnd').onclick=()=>{
+  if(routeLayer){map.removeLayer(routeLayer);routeLayer=null;}
+  document.getElementById('routeCard').classList.remove('show');
+  endDrivingMode(true);
+};
+
+document.getElementById('reportBtn').onclick=()=>{
+  showMsg(`<b>¿Qué quieres reportar?</b><div class="report-grid">
+    <button class="report" data-type="🚓 Policía">🚓<br>Policía</button>
+    <button class="report" data-type="💥 Accidente">💥<br>Accidente</button>
+    <button class="report" data-type="📦 Objeto en vía">📦<br>Objeto</button>
+    <button class="report" data-type="🚧 Construcción">🚧<br>Construcción</button>
+    <button class="report" data-type="🚗 Vehículo parado">🚗<br>Vehículo parado</button>
+    <button class="report" data-type="⚠️ Peligro">⚠️<br>Peligro</button>
+  </div><p class="tiny">En este prototipo los reportes permanecen en este navegador. En la versión multijugador se guardarán en el servidor, tendrán confirmaciones y expiración.</p>`);
+  panel.querySelectorAll('.report').forEach(b=>b.onclick=()=>{
+    if(!user)return;
+    const type=b.dataset.type;
+    const m=L.marker(user).addTo(map).bindPopup(`<b>${type}</b><br>Reportado ahora`).openPopup();
+    reportMarkers.push(m); hidePanel();
+  });
+};
+
+document.getElementById('parkingBtn').onclick=async()=>{
+  if(!user)return showMsg('Esperando GPS.');
+  showMsg('Buscando estacionamientos cercanos…');
+  const [lat,lon]=user;
+  const query=`[out:json][timeout:20];(node["amenity"="parking"](around:5000,${lat},${lon});way["amenity"="parking"](around:5000,${lat},${lon});relation["amenity"="parking"](around:5000,${lat},${lon}););out center tags 40;`;
+  try{
+    const d=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:query}).then(r=>r.json());
+    parkingMarkers.forEach(m=>map.removeLayer(m)); parkingMarkers=[];
+    let paid=0, total=0;
+    for(const e of d.elements||[]){
+      const p=e.tags||{}, la=e.lat??e.center?.lat, lo=e.lon??e.center?.lon;
+      if(la==null||lo==null) continue;
+      total++;
+      const fee=(p.fee||'').toLowerCase();
+      const isPaid=fee==='yes'||fee==='interval'||p['payment:cash']==='yes'||p['payment:credit_cards']==='yes';
+      if(isPaid)paid++;
+      const m=L.marker([la,lo]).addTo(map).bindPopup(
+        `<b>🅿️ ${p.name||'Estacionamiento'}</b><br>${isPaid?'💵 Indicado como de pago':'Precio no confirmado'}${p.capacity?'<br>Capacidad: '+p.capacity:''}`
+      );
+      parkingMarkers.push(m);
+    }
+    hidePanel();
+    showMsg(`<b>Parqueo cercano</b><br>${total} lugares encontrados; ${paid} aparecen etiquetados como de pago.<br><span class="tiny">La ocupación y el precio exactos en tiempo real requieren datos del operador del estacionamiento.</span>`);
+  }catch(e){ showMsg('No se pudo consultar parqueo en este momento.'); }
+};
+
+document.getElementById('cameraBtn').onclick=()=>{
+  showMsg(`<b>📷 Cámaras de tránsito</b><br>La pantalla está preparada para mostrarlas, pero las cámaras en vivo necesitan un feed oficial o proveedor por cada región. No mostraremos cámaras inventadas.<br><br><span class="tiny">Cuando conectemos Massachusetts/otros estados, MV Navigator podrá mostrar iconos de cámaras disponibles en la ruta.</span>`);
+};
+
+document.getElementById('weatherBtn').onclick=async()=>showMsg(await weather() || 'Consultando clima…');
+document.getElementById('locateBtn').onclick=()=>{ if(user)map.setView(user,17); };
+document.getElementById('closeBtn').onclick=()=>{
+  hidePanel();
+  if(routeLayer){map.removeLayer(routeLayer);routeLayer=null;}
+  reportMarkers.forEach(m=>map.removeLayer(m)); reportMarkers=[];
+  parkingMarkers.forEach(m=>map.removeLayer(m)); parkingMarkers=[];
+  document.getElementById('routeCard').classList.remove('show');
+  endDrivingMode(true);
+};
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

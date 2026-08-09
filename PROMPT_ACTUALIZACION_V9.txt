@@ -1,0 +1,21 @@
+PROMPT DE ACTUALIZACIÓN — MV Navigator WEB V9
+
+Actualiza la aplicación web MV Navigator manteniendo su identidad visual viva y su modo de conducción limpio.
+
+MENSAJE DE PRESENTACIÓN:
+“MV Navigator es tu copiloto inteligente, siempre contigo, con o sin internet. Anticipa salidas, te ayuda a mantenerte en el carril correcto y hace que llegar sea más simple. Tú manejas; MV Navigator se encarga de guiarte.”
+
+OBJETIVOS:
+1. Mostrar claramente el nombre MV Navigator y el mensaje de presentación.
+2. Añadir indicador “Con internet” / “Modo sin internet”.
+3. Preparar modo híbrido online/offline.
+4. Permitir que la interfaz cargue sin conexión mediante PWA/service worker.
+5. Mantener como prioridad futura la descarga automática de mapas por zona y por ruta.
+6. Cuando haya Wi‑Fi, preparar mapas de la zona o una ruta larga con consentimiento sencillo.
+7. Al perder internet durante un viaje, mostrar: “Amigo, perdimos conexión, pero sigo contigo.”
+8. Al recuperar señal, mostrar: “Conexión restablecida. Actualizando tráfico.”
+9. Mantener MV Giro como indicador GPS volando sobre la línea de ruta.
+10. Mantener modo conducción limpio, reloj visible, seguridad, peajes, voz intensiva, paradas, música, Base MV y personalización.
+
+IMPORTANTE:
+No afirmar que la navegación offline completa funciona hasta integrar un proveedor de mapas/rutas que permita almacenamiento offline. La web actual solo debe cachear la interfaz y quedar preparada para esa integración.
