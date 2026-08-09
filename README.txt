@@ -75,3 +75,24 @@ MV NAVIGATOR V16 — CLEAN MOBILE + CACHE FIX
 - Pantalla inicial móvil reducida a buscador, 4 accesos, mapa y barra inferior esencial.
 - Se ocultan banners, clima flotante grande, categorías y botones secundarios del inicio.
 - Cursor MV aprobado conservado.
+
+
+MV NAVIGATOR V17 — GOLD CURSOR + SEARCH RESILIENCE
+- Cursor MV reducido a 28x34 px.
+- Cursor color oro con centro navy y letras MV en oro.
+- Diseño propio, compacto y direccional.
+- Búsqueda tolera algunos errores comunes como “walmar” -> “Walmart”.
+- Si una búsqueda exacta falla, intenta una versión simplificada sin número o con menos palabras.
+- Resultados siguen priorizados por cercanía.
+- Cache/service worker actualizado a v17.
+
+
+MV NAVIGATOR V18 — REFERENCE DESIGN
+- Rediseño guiado por la imagen de referencia aprobada.
+- Home móvil con buscador, Casa, Trabajo, Favoritos y Recientes.
+- Sin banners centrales ni “Con internet” grande.
+- Resultados compactos y desplazables.
+- Cursor MV dorado reducido a 24x29 px.
+- Navegación con HUD superior de próximo giro y HUD inferior de viaje.
+- Brújula y guía GPS desalineado mantenidas.
+- Cache actualizado a v18.

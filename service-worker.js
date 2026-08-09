@@ -1,5 +1,5 @@
 
-const CACHE='mv-navigator-v16';
+const CACHE='mv-navigator-v18';
 const SHELL=['./manifest.json'];
 
 self.addEventListener('install', event => {

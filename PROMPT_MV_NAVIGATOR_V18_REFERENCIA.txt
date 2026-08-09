@@ -1,0 +1,23 @@
+MV NAVIGATOR V18 — REFERENCIA VISUAL PRINCIPAL
+
+Usar la imagen aprobada por el usuario como guía de estructura visual:
+- interfaz móvil navy oscura,
+- buscador superior,
+- cuatro accesos: Casa, Trabajo, Favoritos, Recientes,
+- resultados compactos en lista,
+- ruta azul eléctrica,
+- panel de próximo giro,
+- barra inferior simple,
+- brújula,
+- cursor MV pequeño dorado,
+- guía GPS desalineado.
+
+NO mostrar:
+- cuadro azul central,
+- “Con internet” grande,
+- clima flotante grande,
+- personalizar flotante,
+- paneles enormes,
+- botones repetidos.
+
+Mantener identidad propia de MV Navigator y no copiar marcas ni iconografía propietaria de otros navegadores.
