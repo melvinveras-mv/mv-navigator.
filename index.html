@@ -209,7 +209,7 @@
     }
     
 
-    .giroIntro{
+    .giroIntro{display:none !important;
       position:absolute; z-index:1002; left:50%; transform:translateX(-50%);
       top:245px; width:min(680px,calc(100% - 24px));
       background:linear-gradient(135deg,rgba(10,38,72,.96),rgba(20,120,255,.94));
@@ -225,7 +225,7 @@
     .connectionBadge.offline{background:#fff2e1;color:#9a4c00;}
     body.driving .giroIntro, body.driving .connectionBadge{display:none;}
     @media(max-width:600px){
-      .giroIntro{top:235px;padding:10px 12px}
+      .giroIntro{display:none !important;top:235px;padding:10px 12px}
       .giroIntro b{font-size:14px}
       .giroIntro span{font-size:11px}
     }
@@ -248,7 +248,7 @@
     .routePreviewDest{font-size:12px;color:#7a8492;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
     @media(max-width:600px){
-      .giroIntro{display:none !important;}
+      .giroIntro{display:none !important;display:none !important;}
       .weather{
         top:176px !important; right:12px !important; max-width:170px !important;
         font-size:11px !important; padding:8px 9px !important;
@@ -283,11 +283,227 @@
       body.driving .routePreviewCard{display:none !important;}
     }
     
+
+/* ===== MV Navigator v11 identity ===== */
+:root{--mv-navy:#10263f;--mv-teal:#13a6a6;--mv-coral:#ff6b5f;--mv-cream:#f7f2e8;}
+.giroIntro{display:none !important;}
+body{background:var(--mv-cream);}
+.searchbox{border:2px solid rgba(19,166,166,.28);}
+.startTripBtn{background:linear-gradient(135deg,var(--mv-teal),#1677b8) !important;}
+body.driving .quickbar,
+body.driving .poibar,
+body.driving .tools,
+body.driving .weather,
+body.driving .brand,
+body.driving .profileBtn{display:none !important;}
+/* MV mascot: blue flying character, cape, antenna, MV chest badge */
+.mvMascot{
+  width:48px;height:48px;position:relative;transform-origin:50% 65%;
+  filter:drop-shadow(0 5px 5px rgba(0,0,0,.28));
+}
+.mvMascot .head{position:absolute;left:13px;top:3px;width:23px;height:22px;border-radius:50%;background:#1687d8;border:2px solid #0d4d86;}
+.mvMascot .antenna{position:absolute;left:23px;top:-5px;width:3px;height:10px;background:#0d4d86;border-radius:3px;}
+.mvMascot .antenna:after{content:"";position:absolute;left:-3px;top:-4px;width:8px;height:8px;border-radius:50%;background:#ffcc4d;}
+.mvMascot .eye{position:absolute;top:9px;width:4px;height:5px;border-radius:50%;background:white;}
+.mvMascot .eye.e1{left:6px}.mvMascot .eye.e2{right:6px}
+.mvMascot .body{position:absolute;left:12px;top:23px;width:25px;height:21px;border-radius:9px 9px 12px 12px;background:#1687d8;border:2px solid #0d4d86;color:white;font:bold 11px/18px Arial;text-align:center;}
+.mvMascot .cape{position:absolute;left:4px;top:24px;width:17px;height:22px;background:#ff6b5f;clip-path:polygon(100% 0,100% 100%,0 72%);transform:rotate(12deg);z-index:-1;}
+.mvMascot .arm{position:absolute;top:27px;width:15px;height:5px;border-radius:5px;background:#1687d8;border:1px solid #0d4d86;}
+.mvMascot .arm.a1{left:1px;transform:rotate(-28deg)}.mvMascot .arm.a2{right:0;transform:rotate(25deg)}
+
+
+/* ===== MV NAVIGATOR v12 FINAL ===== */
+:root{
+  --mv-navy:#10263f;
+  --mv-teal:#12a6a6;
+  --mv-coral:#ff6b5f;
+  --mv-sand:#f6f1e8;
+  --mv-sky:#dff4f1;
+}
+html,body{background:var(--mv-sand);}
+.giroIntro,.connectionBadge{display:none !important;}
+#map{background:var(--mv-sky);}
+
+/* Keep start screen lively but clean */
+.brand{
+  background:linear-gradient(135deg,var(--mv-navy),#174c66) !important;
+}
+.searchbox{
+  border:2px solid rgba(18,166,166,.28);
+  box-shadow:0 7px 24px rgba(16,38,63,.15) !important;
+}
+#searchBtn{background:var(--mv-teal) !important;color:white !important;}
+.startTripBtn{
+  background:linear-gradient(135deg,var(--mv-teal),#1777b8) !important;
+  color:#fff !important;
+}
+
+/* Clean driving mode: no clutter */
+body.driving .top,
+body.driving .quickbar,
+body.driving .poibar,
+body.driving .brand,
+body.driving .weather,
+body.driving .tools,
+body.driving .profileBtn,
+body.driving .modebar,
+body.driving .route,
+body.driving .routePreviewCard,
+body.driving .giroIntro,
+body.driving .connectionBadge{
+  display:none !important;
+}
+body.driving #map{
+  filter:saturate(1.08) contrast(1.03);
+}
+
+/* Flying MV mascot — this is the ONLY position cursor */
+.mvMascot{
+  width:54px;
+  height:58px;
+  position:relative;
+  transform-origin:50% 66%;
+  filter:drop-shadow(0 5px 5px rgba(0,0,0,.28));
+  animation:mvFloat .8s ease-in-out infinite alternate;
+}
+@keyframes mvFloat{
+  from{translate:0 2px}
+  to{translate:0 -4px}
+}
+.mvMascot .cape{
+  position:absolute;
+  left:5px;
+  top:27px;
+  width:20px;
+  height:25px;
+  background:var(--mv-coral);
+  clip-path:polygon(100% 0,100% 100%,0 72%);
+  transform:rotate(12deg);
+  transform-origin:100% 0;
+  z-index:-1;
+  animation:mvCape .42s ease-in-out infinite alternate;
+}
+@keyframes mvCape{
+  from{transform:rotate(8deg) skewY(-4deg)}
+  to{transform:rotate(18deg) skewY(5deg)}
+}
+.mvMascot .head{
+  position:absolute;
+  left:15px;
+  top:4px;
+  width:24px;
+  height:23px;
+  border-radius:50%;
+  background:#1687d8;
+  border:2px solid #0d4d86;
+}
+.mvMascot .antenna{
+  position:absolute;
+  left:26px;
+  top:-6px;
+  width:3px;
+  height:12px;
+  background:#0d4d86;
+  border-radius:3px;
+}
+.mvMascot .antenna:after{
+  content:"";
+  position:absolute;
+  left:-3px;
+  top:-5px;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#ffd34f;
+  border:1px solid #a67600;
+}
+.mvMascot .eye{
+  position:absolute;
+  top:9px;
+  width:4px;
+  height:5px;
+  border-radius:50%;
+  background:#fff;
+}
+.mvMascot .eye.e1{left:6px}
+.mvMascot .eye.e2{right:6px}
+.mvMascot .body{
+  position:absolute;
+  left:13px;
+  top:27px;
+  width:29px;
+  height:24px;
+  border-radius:10px 10px 13px 13px;
+  background:#1687d8;
+  border:2px solid #0d4d86;
+  color:white;
+  font:bold 12px/20px Arial,sans-serif;
+  text-align:center;
+}
+.mvMascot .arm{
+  position:absolute;
+  top:31px;
+  width:16px;
+  height:5px;
+  border-radius:5px;
+  background:#1687d8;
+  border:1px solid #0d4d86;
+}
+.mvMascot .arm.a1{left:1px;transform:rotate(-28deg)}
+.mvMascot .arm.a2{right:0;transform:rotate(25deg)}
+
+/* Trail left by MV mascot while moving */
+.mvTrailGlow{
+  stroke:#29d7d0 !important;
+  stroke-width:6 !important;
+  stroke-linecap:round !important;
+  filter:drop-shadow(0 0 4px rgba(41,215,208,.7));
+}
+
+@media(max-width:600px){
+  .giroIntro,.connectionBadge,.profileBtn{display:none !important;}
+  .quickbar{
+    top:76px !important;
+    grid-template-columns:repeat(5,minmax(58px,1fr)) !important;
+    gap:4px !important;
+  }
+  .quick{font-size:9px !important;min-height:47px !important;padding:6px 2px !important;}
+  .quick span{font-size:17px !important;}
+  .poibar{
+    top:129px !important;
+    left:10px !important;
+    right:10px !important;
+    width:auto !important;
+    transform:none !important;
+  }
+  .poi{font-size:10px !important;padding:6px 8px !important;}
+  .brand{top:174px !important;left:10px !important;}
+  .weather{top:174px !important;right:10px !important;max-width:165px !important;font-size:10px !important;}
+  .panel{
+    left:10px !important;
+    right:10px !important;
+    bottom:142px !important;
+    max-height:42vh !important;
+    overflow:auto !important;
+  }
+  .routePreviewCard{
+    left:10px !important;
+    right:10px !important;
+    bottom:144px !important;
+  }
+  .tools{
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:5px !important;
+    bottom:8px !important;
+  }
+  .tool{font-size:10px !important;min-height:52px !important;}
+}
+
 </style>
 </head>
 <body>
 <div id="map"></div>
-<div class="connectionBadge" id="connectionBadge">● Con internet</div>
+
 
 <div class="top">
   <div class="searchbox">
@@ -318,34 +534,7 @@
 
 <div class="brand"><b>MV NAVIGATOR</b><small>SIEMPRE CONTIGO</small></div>
 <div class="weather" id="weather">🌤️ Activando clima…</div>
-<div class="giroIntro" id="giroIntro">
-  <b>MV Navigator — Siempre contigo</b>
-  <span>Siempre contigo, con o sin internet. Tu copiloto inteligente para cada ruta.</span>
-</div>
-<button class="profileBtn" id="profileBtn">👤 Personalizar</button>
-<div class="modebar" id="modebar">
-  <button class="modeBtn active" data-mode="car">🚗 Carro</button>
-  <button class="modeBtn" data-mode="walk">🚶 Caminando</button>
-  <button class="modeBtn" data-mode="run">🏃 Corriendo</button>
-  <button class="modeBtn" data-mode="bike">🚲 Bicicleta</button>
-  <button class="modeBtn" data-mode="train">🚆 Tren</button>
-</div>
 
-<div class="route" id="routeCard">
-  <strong id="routeTitle">Ruta lista</strong><br>
-  <span id="routeInfo"></span>
-</div>
-
-<div class="giroClock" id="giroClock">--:--</div>
-<div class="musicMini" id="musicMini">
-  <div class="musicRow">
-    <div class="musicLogo" id="musicLogo">🎵</div>
-    <div class="musicMeta"><b id="musicTitle">Música</b><span id="musicSource">YouTube / Spotify</span></div>
-    <button class="musicCtl" id="musicPrev">⏮</button>
-    <button class="musicCtl" id="musicPlay">▶</button>
-    <button class="musicCtl" id="musicNext">⏭</button>
-  </div>
-</div>
 
 <div class="driveHud" id="turnHud">
   <div class="turnRow">
@@ -394,7 +583,22 @@
   <button class="tool" id="closeBtn"><span>✕</span>Limpiar</button>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">function heroIcon(heading=0){
+  return L.divIcon({
+    className:'',
+    html:`<div class="mvMascot" style="transform:rotate(${heading}deg)">
+      <div class="cape"></div>
+      <div class="antenna"></div>
+      <div class="head"><i class="eye e1"></i><i class="eye e2"></i></div>
+      <div class="arm a1"></div>
+      <div class="arm a2"></div>
+      <div class="body">MV</div>
+    </div>`,
+    iconSize:[54,58],
+    iconAnchor:[27,35]
+  });
+}
+</script>
 <script>
 const map = L.map('map', {zoomControl:false}).setView([42.36,-71.06], 12);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -444,7 +648,7 @@ function updateHero(pos) {
     if(heroTrailPoints.length > 120) heroTrailPoints.shift();
     if(heroTrailLayer) map.removeLayer(heroTrailLayer);
     heroTrailLayer = L.polyline(heroTrailPoints,{
-      weight:5, opacity:.75, color:'#45d8ff', dashArray:'1 8', lineCap:'round'
+      weight:6, opacity:.75, color:'#29d7d0', dashArray:null, lineCap:'round'
     }).addTo(map);
 
     if(navigationStarted) map.panTo(user,{animate:true,duration:.5});
@@ -944,6 +1148,7 @@ document.getElementById('driveReport').onclick=()=>document.getElementById('repo
 document.getElementById('driveSafety').onclick=openSafetyCenter;
 
 document.getElementById('startTripBtn').onclick=()=>{
+  hidePanel();
   if(!pendingRoute || !pendingPlace) return;
   document.getElementById('routePreviewCard').classList.remove('show');
   enterDrivingMode(pendingRoute, pendingPlace);
@@ -968,7 +1173,7 @@ document.getElementById('reportBtn').onclick=()=>{
     <button class="report" data-type="💥 Accidente">💥<br>Accidente</button>
     <button class="report" data-type="📦 Objeto en vía">📦<br>Objeto</button>
     <button class="report" data-type="🚧 Construcción">🚧<br>Construcción</button>
-    <button class="report" data-type="🚗 Vehículo parado">🚗<br>Vehículo parado</button>
+    <button class="report" data-type="🧭 Vehículo parado">🧭<br>Vehículo parado</button>
     <button class="report" data-type="⚠️ Peligro">⚠️<br>Peligro</button>
   </div><p class="tiny">En este prototipo los reportes permanecen en este navegador. En la versión multijugador se guardarán en el servidor, tendrán confirmaciones y expiración.</p>`);
   panel.querySelectorAll('.report').forEach(b=>b.onclick=()=>{
