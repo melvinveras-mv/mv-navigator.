@@ -106,3 +106,21 @@ MV NAVIGATOR V19 — REFERENCE POLISH
 - La búsqueda nunca debe quedarse indefinidamente en “buscando”.
 - Si falla o tarda demasiado, muestra mensaje claro y permite reintentar.
 - Mantiene el diseño oscuro de referencia y cursor MV pequeño dorado.
+
+
+MV NAVIGATOR V20 — CURSOR + ROUTE MESSAGE FIX
+- Cursor MV reducido a 18x24 px.
+- Cursor dorado, limpio, direccional y con centro navy.
+- Eliminado el aspecto grande/cuadrado del cursor anterior.
+- El mensaje “No se pudo calcular la ruta” solo aparece si realmente falla la ruta.
+- Si la ruta azul se dibuja correctamente, cualquier mensaje de error anterior se elimina.
+- Cache actualizado a v20.
+
+
+MV NAVIGATOR V21 — BOTONES INFERIORES
+- Mi ubicación: solicita GPS, centra el mapa y mueve el cursor MV.
+- Clima: abre el módulo de clima cuando está disponible.
+- Viaje: abre preferencias de ruta o muestra controles básicos.
+- Seguridad: abre panel de emergencia/reportes/servicios cercanos.
+- Feedback táctil para botones.
+- Cache actualizado a v21.

@@ -1644,6 +1644,69 @@ html,body{
   .searchLoading{top:106px !important;}
 }
 
+
+/* ===== MV NAVIGATOR v20 — CURSOR + ROUTE MESSAGE FIX ===== */
+.mvCursor{
+  width:18px !important;
+  height:24px !important;
+  position:relative;
+  transform-origin:50% 72%;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.42));
+}
+.mvCursor .shape{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,#ffe08a 0%,#efb82b 68%,#c98500 100%) !important;
+  clip-path:polygon(50% 0,88% 76%,63% 66%,58% 100%,42% 100%,37% 66%,12% 76%);
+}
+.mvCursor .inner{
+  position:absolute;
+  left:3px !important;
+  top:6px !important;
+  width:12px !important;
+  height:10px !important;
+  background:#10263f !important;
+  border:1px solid #fff3bd !important;
+  border-radius:5px !important;
+  color:#ffd96a !important;
+  display:grid;
+  place-items:center;
+  font:bold 6.5px Arial,sans-serif !important;
+  line-height:1;
+}
+.mvCursor .tail{
+  display:none !important;
+}
+
+/* Route status toast should be compact and only used on real errors */
+.routeErrorToast{
+  position:absolute;
+  z-index:1400;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:76px;
+  max-width:78%;
+  padding:9px 12px;
+  border-radius:12px;
+  background:rgba(7,24,39,.96);
+  color:#fff;
+  border:1px solid #274963;
+  box-shadow:0 7px 20px rgba(0,0,0,.35);
+  font-size:12px;
+  display:none;
+}
+.routeErrorToast.show{display:block;}
+
+
+/* v21 bottom action feedback */
+.tool:active,.quick:active,.goBtn:active{
+  transform:scale(.97);
+}
+.tool,.quick,.goBtn{
+  touch-action:manipulation;
+  cursor:pointer;
+}
+
 </style>
 </head>
 <body>
@@ -1740,6 +1803,7 @@ html,body{
   </div>
 </div>
 
+<div class="routeErrorToast" id="routeErrorToast"></div>
 <div class="panel" id="panel"></div>
 
 <div class="tools">
@@ -1760,10 +1824,9 @@ html,body{
     html:`<div class="mvCursor" style="transform:rotate(${heading}deg)">
       <div class="shape"></div>
       <div class="inner">MV</div>
-      <div class="tail"></div>
     </div>`,
-    iconSize:[24,29],
-    iconAnchor:[12,20]
+    iconSize:[18,24],
+    iconAnchor:[9,16]
   });
 }
 
@@ -1784,6 +1847,99 @@ if(voiceSearchBtn){
     rec.start();
   };
 }
+
+
+function removeStaleRouteMessage(){
+  if(routeLayer){
+    const p=document.getElementById('panel');
+    if(p && /No se pudo calcular la ruta/i.test(p.textContent||'')){
+      p.classList.remove('show');
+      p.innerHTML='';
+    }
+  }
+}
+
+
+/* ===== MV NAVIGATOR v21 — BOTTOM ACTIONS ===== */
+(function(){
+  const byId=id=>document.getElementById(id);
+
+  const locate=byId('locateBtn');
+  if(locate){
+    locate.onclick=()=>{
+      if(!navigator.geolocation){
+        return mvActionToast('Este navegador no permite obtener tu ubicación.');
+      }
+      mvActionToast('Buscando tu ubicación…');
+      navigator.geolocation.getCurrentPosition(pos=>{
+        user=[pos.coords.latitude,pos.coords.longitude];
+        if(heroMarker){ map.removeLayer(heroMarker); heroMarker=null; }
+        heroMarker=L.marker(user,{icon:heroIcon(0),zIndexOffset:1000}).addTo(map);
+        map.setView(user,17,{animate:true});
+        mvActionToast('Ubicación actualizada.');
+      },err=>{
+        mvActionToast('No pude obtener tu ubicación. Revisa el permiso de GPS.');
+      },{enableHighAccuracy:true,timeout:8000,maximumAge:15000});
+    };
+  }
+
+  const weather=byId('weatherBtn');
+  if(weather){
+    weather.onclick=()=>{
+      const w=document.querySelector('.weather');
+      if(w){
+        w.style.display='block';
+        mvActionToast('Clima abierto.');
+      }else{
+        mvActionToast('El módulo de clima aún no está disponible en esta vista.');
+      }
+    };
+  }
+
+  const trip=byId('tripPrefsBtn');
+  if(trip){
+    trip.onclick=()=>{
+      if(typeof openTripPrefs==='function'){
+        openTripPrefs();
+      }else if(typeof showTripPrefs==='function'){
+        showTripPrefs();
+      }else{
+        mvActionToast('Viaje: configura aquí tus preferencias de ruta.');
+        const p=document.getElementById('panel');
+        if(p){
+          p.innerHTML=`
+            <div style="padding:14px">
+              <b>Preferencias de viaje</b>
+              <div style="display:grid;gap:8px;margin-top:10px">
+                <button onclick="this.classList.toggle('active')">Evitar peajes</button>
+                <button onclick="this.classList.toggle('active')">Evitar autopistas</button>
+                <button onclick="this.classList.toggle('active')">Ruta más rápida</button>
+              </div>
+            </div>`;
+          p.classList.add('show');
+        }
+      }
+    };
+  }
+
+  const safety=byId('safetyBtn');
+  if(safety){
+    safety.onclick=()=>{
+      const p=document.getElementById('panel');
+      if(!p) return;
+      p.innerHTML=`
+        <div style="padding:14px">
+          <b>Seguridad</b>
+          <div style="display:grid;gap:8px;margin-top:10px">
+            <button onclick="mvActionToast('Abrir llamada de emergencia desde el teléfono.')">🛡️ Emergencia / 911</button>
+            <button onclick="mvActionToast('Reporte de peligro preparado.')">⚠️ Reportar peligro</button>
+            <button onclick="mvActionToast('Buscando servicios de emergencia cercanos…')">🏥 Servicios cercanos</button>
+          </div>
+        </div>`;
+      p.classList.add('show');
+    };
+  }
+})();
 
 </script>
 <script>
@@ -2301,7 +2457,34 @@ document.getElementById('compassBtn').onclick=()=>{
   if(user) map.setView(user,map.getZoom(),{animate:true});
 };
 
+
+
+function mvActionToast(msg){
+  const p=document.getElementById('panel');
+  if(!p) return;
+  p.innerHTML=`<div style="padding:12px;font-weight:700">${msg}</div>`;
+  p.classList.add('show');
+  clearTimeout(window.__mvActionToast);
+  window.__mvActionToast=setTimeout(()=>{
+    p.classList.remove('show');
+  },2600);
+}
+
+function showRouteError(msg){
+  const box=document.getElementById('routeErrorToast');
+  if(!box) return;
+  box.textContent=msg;
+  box.classList.add('show');
+  clearTimeout(window.__mvRouteErrorTimer);
+  window.__mvRouteErrorTimer=setTimeout(()=>box.classList.remove('show'),3500);
+}
+function clearRouteError(){
+  const box=document.getElementById('routeErrorToast');
+  if(box) box.classList.remove('show');
+}
+
 async function routeTo(r){
+  clearRouteError();
   hidePanel();
   document.getElementById('detailsSheet')?.classList.remove('show');
   document.getElementById('routePreviewCard')?.classList.remove('show');
@@ -2319,7 +2502,9 @@ async function routeTo(r){
     routeLayer=L.polyline(coords,{weight:7,opacity:.9}).addTo(map);
     map.fitBounds(routeLayer.getBounds(),{padding:[45,45]});
     const mi=rt.distance/1609.344, min=Math.round(rt.duration/60);
+    clearRouteError();
     document.getElementById('routeTitle').textContent='Ruta preparada';
+    clearRouteError();
     document.getElementById('routeInfo').textContent=`${mi.toFixed(1)} mi · ${min} min`;
 
     pendingRoute = rt;
@@ -2336,7 +2521,7 @@ async function routeTo(r){
     if(user){
       if(!heroMarker) heroMarker=L.marker(user,{icon:heroIcon(0),zIndexOffset:1000}).addTo(map);
     }
-  }catch(e){ showMsg('No se pudo calcular la ruta.'); }
+  }catch(e){ showRouteError('No se pudo calcular la ruta.'); }
 }
 
 
@@ -2621,7 +2806,7 @@ document.getElementById('closeBtn').onclick=()=>{
 };
 
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=19').catch(()=>{}));
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=21').catch(()=>{}));
 }
 </script>
 </body>
