@@ -96,3 +96,13 @@ MV NAVIGATOR V18 — REFERENCE DESIGN
 - Navegación con HUD superior de próximo giro y HUD inferior de viaje.
 - Brújula y guía GPS desalineado mantenidas.
 - Cache actualizado a v18.
+
+
+MV NAVIGATOR V19 — REFERENCE POLISH
+- Nombre MV NAVIGATOR visible arriba sin tapar el mapa.
+- Lema SIEMPRE CONTIGO debajo del nombre.
+- Buscador desplazado debajo del encabezado.
+- Estado de búsqueda con spinner y timeout de 7 segundos.
+- La búsqueda nunca debe quedarse indefinidamente en “buscando”.
+- Si falla o tarda demasiado, muestra mensaje claro y permite reintentar.
+- Mantiene el diseño oscuro de referencia y cursor MV pequeño dorado.

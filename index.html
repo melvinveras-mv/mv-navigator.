@@ -1571,9 +1571,89 @@ html,body{
   }
 }
 
+
+/* ===== MV NAVIGATOR v19 — REFERENCE POLISH ===== */
+.mvHeader{
+  position:absolute;
+  z-index:1400;
+  left:12px;
+  right:12px;
+  top:8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  pointer-events:none;
+}
+.mvHeaderBrand{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#fff;
+  font-weight:900;
+  letter-spacing:.4px;
+  text-shadow:0 2px 5px #0007;
+}
+.mvHeaderLogo{
+  width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,#173c60,#0c2339);
+  border:1px solid #315d80;
+  display:grid;place-items:center;
+  color:#f2c24e;
+  font:bold 11px Arial;
+}
+.mvHeaderText small{
+  display:block;
+  font-size:9px;
+  font-weight:700;
+  color:#a9c1d4;
+  letter-spacing:.8px;
+}
+.searchLoading{
+  display:none;
+  position:absolute;
+  z-index:1401;
+  left:12px;
+  right:12px;
+  top:67px;
+  background:rgba(7,24,39,.98);
+  color:#dce8f2;
+  border:1px solid #24445e;
+  border-radius:13px;
+  padding:10px 12px;
+  font-size:12px;
+}
+.searchLoading.show{display:block;}
+.searchLoading .spinner{
+  display:inline-block;
+  width:12px;height:12px;
+  border:2px solid #385873;
+  border-top-color:#24a9ff;
+  border-radius:50%;
+  animation:mvSpin .7s linear infinite;
+  margin-right:7px;
+  vertical-align:-2px;
+}
+@keyframes mvSpin{to{transform:rotate(360deg)}}
+
+@media(max-width:600px){
+  .mvHeader{top:7px;}
+  .top{top:46px !important;}
+  .quickbar{top:106px !important;}
+  .autocompleteBox{top:58px !important;}
+  .panel{top:166px !important;}
+  .searchLoading{top:106px !important;}
+}
+
 </style>
 </head>
 <body>
+<div class="mvHeader">
+  <div class="mvHeaderBrand">
+    <div class="mvHeaderLogo">MV</div>
+    <div class="mvHeaderText">MV NAVIGATOR<small>SIEMPRE CONTIGO</small></div>
+  </div>
+</div>
+
 <div id="map"></div>
 
 
@@ -1587,6 +1667,7 @@ html,body{
   <div class="searchhint">Ejemplo: 123 Main St, Boston, MA</div>
 </div>
 
+<div class="searchLoading" id="searchLoading"><span class="spinner"></span><span id="searchLoadingText">Buscando lugares cercanos…</span></div>
 <div class="quickbar">
   <button class="quick" data-slot="home"><span>🏠</span>Casa</button>
   <button class="quick" data-slot="work"><span>💼</span>Trabajo</button>
@@ -1943,6 +2024,21 @@ function haversineMiles(aLat,aLon,bLat,bLon){
 }
 
 
+
+function setSearchLoading(on,text='Buscando lugares cercanos…'){
+  const box=document.getElementById('searchLoading');
+  const t=document.getElementById('searchLoadingText');
+  if(!box) return;
+  if(t) t.textContent=text;
+  box.classList.toggle('show',!!on);
+}
+function withTimeout(promise, ms=7000){
+  return Promise.race([
+    promise,
+    new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms))
+  ]);
+}
+
 function hideAutocomplete(){
   const box=document.getElementById('autocompleteBox');
   if(box){ box.classList.remove('show'); box.innerHTML=''; }
@@ -2022,8 +2118,7 @@ async function nominatimSearchOnce(q, limit=8){
     params.set('bounded','0');
   }
 
-  return fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`,
-    {headers:{'Accept-Language':'es'}}).then(r=>r.json());
+  return withTimeout(fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {headers:{'Accept-Language':'es'}}).then(r=>r.json()), 7000);
 }
 
 async function resilientPlaceSearch(q, limit=8){
@@ -2040,33 +2135,29 @@ async function resilientPlaceSearch(q, limit=8){
 
 async function runAutocomplete(q){
   q=q.trim();
-  if(q.length<2){ hideAutocomplete(); return; }
+  if(q.length<2){ hideAutocomplete(); setSearchLoading(false); return; }
 
-  const found=await resilientPlaceSearch(q,8);
-  const res=found.results||[];
+  setSearchLoading(true,'Buscando sugerencias…');
+  try{
+    const found=await resilientPlaceSearch(q,8);
+    const res=found.results||[];
 
-  const items=res.map(r=>{
-    const lat=+r.lat, lon=+r.lon;
-    const dist=user?haversineMiles(user[0],user[1],lat,lon):99999;
-    return {
-      name:r.name||r.display_name.split(',')[0],
-      display_name:r.display_name,
-      lat,lon,dist
-    };
-  }).sort((a,b)=>a.dist-b.dist).slice(0,6);
+    const items=res.map(r=>{
+      const lat=+r.lat, lon=+r.lon;
+      const dist=user?haversineMiles(user[0],user[1],lat,lon):99999;
+      return {
+        name:r.name||r.display_name.split(',')[0],
+        display_name:r.display_name,
+        lat,lon,dist
+      };
+    }).sort((a,b)=>a.dist-b.dist).slice(0,6);
 
-  if(found.usedQuery && normalizeCommonSearchTypos(q)!==q){
-    const box=document.getElementById('autocompleteBox');
-    if(box && items.length){
-      renderAutocomplete(items);
-      const hint=document.createElement('div');
-      hint.className='autoEmpty';
-      hint.textContent=`Buscando como: ${found.usedQuery}`;
-      box.prepend(hint);
-      return;
-    }
+    renderAutocomplete(items);
+  }catch(e){
+    hideAutocomplete();
+  }finally{
+    setSearchLoading(false);
   }
-  renderAutocomplete(items);
 }
 
 const searchInput=document.getElementById('search');
@@ -2089,44 +2180,46 @@ async function searchPlace(){
   const q=document.getElementById('search').value.trim();
   if(!q) return;
 
-  showMsg('Buscando cerca de ti…');
+  setSearchLoading(true,'Buscando destino…');
+  try{
+    const found=await resilientPlaceSearch(q,12);
+    const res=found.results||[];
 
-  const found=await resilientPlaceSearch(q,12);
-  const res=found.results||[];
+    const mapped=res.map(r=>{
+      const lat=+r.lat, lon=+r.lon;
+      const dist=user?haversineMiles(user[0],user[1],lat,lon):99999;
+      return {
+        name:r.name||r.display_name.split(',')[0],
+        display_name:r.display_name,
+        lat,lon,dist
+      };
+    }).sort((a,b)=>a.dist-b.dist).slice(0,8);
 
-  const mapped=res.map(r=>{
-    const lat=+r.lat, lon=+r.lon;
-    const dist=user?haversineMiles(user[0],user[1],lat,lon):99999;
-    return {
-      name:r.name||r.display_name.split(',')[0],
-      display_name:r.display_name,
-      lat,lon,dist
-    };
-  }).sort((a,b)=>a.dist-b.dist).slice(0,8);
+    if(!mapped.length){
+      showMsg('No encontré coincidencias cercanas. Prueba escribiendo solo el nombre del lugar o la calle.');
+      return;
+    }
 
-  if(!mapped.length){
-    return showMsg('No encontré coincidencias cercanas. Prueba con el nombre del lugar o una calle cercana.');
-  }
-
-  const correction = found.usedQuery && found.usedQuery.toLowerCase() !== q.toLowerCase()
-    ? `<div class="tiny" style="margin:4px 0 8px">Busqué también como: <b>${found.usedQuery}</b></div>`
-    : '';
-
-  showMsg(`<b>Resultados cercanos</b>${correction}`+mapped.map((r,i)=>`
-    <div class="result">
-      <div class="resultRow">
-        <div>
-          <div class="resultTitle">${r.name}</div>
-          <div class="resultAddr">${r.display_name}</div>
-          <div class="resultMeta">${r.dist<9999?r.dist.toFixed(1)+' mi':''}</div>
+    showMsg(`<b>Resultados cercanos</b>`+mapped.map((r,i)=>`
+      <div class="result">
+        <div class="resultRow">
+          <div>
+            <div class="resultTitle">${r.name}</div>
+            <div class="resultAddr">${r.display_name}</div>
+            <div class="resultMeta">${r.dist<9999?r.dist.toFixed(1)+' mi':''}</div>
+          </div>
+          <button class="goBtn" data-i="${i}">Ir</button>
         </div>
-        <button class="goBtn" data-i="${i}">Ir</button>
-      </div>
-    </div>`).join(''));
+      </div>`).join(''));
 
-  panel.querySelectorAll('.goBtn').forEach(btn=>{
-    btn.onclick=()=>openPlaceDetails(mapped[+btn.dataset.i]);
-  });
+    panel.querySelectorAll('.goBtn').forEach(btn=>{
+      btn.onclick=()=>openPlaceDetails(mapped[+btn.dataset.i]);
+    });
+  }catch(e){
+    showMsg('La búsqueda tardó demasiado. Intenta de nuevo o escribe una dirección más corta.');
+  }finally{
+    setSearchLoading(false);
+  }
 }
 document.getElementById('searchBtn').onclick=searchPlace;
 document.getElementById('clearSearchBtn').onclick=()=>{
@@ -2528,7 +2621,7 @@ document.getElementById('closeBtn').onclick=()=>{
 };
 
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=18').catch(()=>{}));
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js?v=19').catch(()=>{}));
 }
 </script>
 </body>
